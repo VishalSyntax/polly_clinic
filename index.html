@@ -15,7 +15,6 @@
             align-items: center;
             height: 100vh;
         }
-
         .login-container {
             background-color: white;
             border: 1px solid #ddd;
@@ -30,13 +29,11 @@
             font-size: 18px;
             margin-bottom: 20px;
         }
-
         .user-types {
             margin-bottom: 15px;
             display: flex;
             gap: 5px;
         }
-
         .user-btn {
             padding: 5px 10px;
             border: 1px solid #ccc;
@@ -67,41 +64,35 @@
         .form-control {
             width: 100%;
             padding: 8px;
-            border: 1px solid #ccc;
+            border: 1px solid #75e6f8;
         }
-
         .login-btn {
             width: 100%;
             padding: 8px;
-            background-color: #4CAF50;
+            background-color: #b2bcfb;
             color: white;
             border: none;
             cursor: pointer;
             font-weight: bold;
         }
-
         .login-btn:hover {
-            background-color: #45a049;
+            background-color: #f96565;
         }
-
         .trouble-text {
             margin-top: 15px;
             text-align: center;
             font-size: 12px;
         }
-
         .trouble-text a {
             color: #0066cc;
             text-decoration: none;
         }
-
         .admin-toggle {
             text-align: right;
             margin-bottom: 10px;
         }
-
         .admin-toggle a {
-            color: #666;
+            color: #f2f3f2;
             text-decoration: none;
             font-size: 12px;
         }
@@ -135,80 +126,8 @@
             <button type="submit" class="login-btn">Login</button>
         </form>
         
-        <p class="trouble-text">
-            <a href="#">Forgot password?</a> | <a href="#">Help</a>
-        </p>
+        
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const receptionistBtn = document.getElementById('receptionistBtn');
-            const doctorBtn = document.getElementById('doctorBtn');
-            const adminBtn = document.getElementById('adminBtn');
-            const adminToggle = document.getElementById('adminToggle');
-            const loginForm = document.getElementById('loginForm');
-            
-            let userType = 'receptionist';
-            let adminVisible = false;
-            
-            adminToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                adminVisible = !adminVisible;
-                
-                if (adminVisible) {
-                    adminBtn.classList.remove('hidden');
-                    adminToggle.textContent = 'Hide Admin';
-                } else {
-                    adminBtn.classList.add('hidden');
-                    
-                    if (userType === 'admin') {
-                        receptionistBtn.classList.add('active');
-                        adminBtn.classList.remove('active');
-                        userType = 'receptionist';
-                    }
-                    
-                    adminToggle.textContent = 'Admin Login';
-                }
-            });
-            
-            receptionistBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                receptionistBtn.classList.add('active');
-                doctorBtn.classList.remove('active');
-                adminBtn.classList.remove('active');
-                userType = 'receptionist';
-            });
-            
-            doctorBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                doctorBtn.classList.add('active');
-                receptionistBtn.classList.remove('active');
-                adminBtn.classList.remove('active');
-                userType = 'doctor';
-            });
-            
-            adminBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                adminBtn.classList.add('active');
-                receptionistBtn.classList.remove('active');
-                doctorBtn.classList.remove('active');
-                userType = 'admin';
-            });
-            
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                
-                if (!username || !password) {
-                    alert('Please enter both username and password');
-                    return;
-                }
-                
-                alert(`Logging in as ${userType} with username: ${username}`);
-                loginForm.reset();
-            });
-        });
-    </script>
 </body>
 </html>
