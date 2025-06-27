@@ -1,104 +1,95 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>
-    </title>
-  </head>
-  <body>
-    <header>
-      <nav>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item ">
-                <a class="nav-link " href="index.html">Home<span class="sr-only"></span></a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="main.html">Patient Info</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="slot.html">Slot</a>
-              </li>
-            </ul>
-          </div
-      </nav>
-    </header>
-    <br>
-    <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-      </div>
-    </div>
-    </div>
-      <style>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Appointment Booking</title>
+  <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      padding: 20px;
+      background-image: url('https://pngtree.com/freebackground/medical-doctor-science-background_968711.html'); /* Replace with your own image URL */
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
     .appointment-form {
-      background: white;
-      padding: 20px;
-      max-width: 400px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      width: 350px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
+
     .appointment-form h2 {
       text-align: center;
+      margin-bottom: 25px;
+      color: #333;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    .form-group label {
+
+    .appointment-form label {
       display: block;
+      margin-top: 15px;
       margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
     }
-    .form-group input, .form-group select {
+
+    .appointment-form select,
+    .appointment-form input[type="date"],
+    .appointment-form input[type="time"] {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #aaa;
+      padding: 10px;
       border-radius: 5px;
+      border: 1px solid #ccc;
     }
-    .submit-btn {
-      background-color: #28a745;
+
+    .appointment-form button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #007BFF;
       color: white;
       border: none;
-      padding: 10px;
-      width: 100%;
       border-radius: 5px;
+      font-size: 16px;
       cursor: pointer;
     }
-    .submit-btn:hover {
-      background-color: #218838;
+
+    .appointment-form button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <div class="appointment-form">
-    <h2>Book Doctor Appointment</h2>
-    <form action="submit_appointment.php" method="post">
-      
-       <div class="form-group">
-        <label for="date">Select Date:</label>
-        <input type="date" id="date" name="appointment_date" required>
-      </div>
+  <form class="appointment-form">
+    <h2>Book Appointment</h2>
 
-      <div class="form-group">
-        <label for="slot">Select Time Slot:</label>
-        <select id="slot" name="time_slot" required>
-          <option value="">--Choose Slot--</option>
-          <option value="9:00-9:30 AM">9:00 - 9:30 AM</option>
-          <option value="10:00-10:30 AM">10:00 - 10:30 AM</option>
-          <option value="11:00-11:30 AM">11:00 - 11:30 AM</option>
-          <option value="2:00-2:30 PM">2:00 - 2:30 PM</option>
-          <option value="3:00-3:30 PM">3:00 - 3:30 PM</option>
-          <option value="4:00-4:30 PM">4:00 - 4:30 PM</option>
-        </select>
-      </div>
+    <label for="doctor">Select Doctor</label>
+    <select id="doctor" name="doctor">
+      <option value="">-- Choose Doctor --</option>
+      <option value="dr_smith">Dr. Smith</option>
+      <option value="dr_jones">Dr. Jones</option>
+      <option value="dr_khan">Dr. Khan</option>
+    </select>
 
-      <button type="submit" class="submit-btn">Book Appointment</button>
-    </form>
-  </div>
-  </body>
+    <label for="date">Select Date</label>
+    <input type="date" id="date" name="date" required>
+
+    <label for="time">Select Time</label>
+    <input type="time" id="time" name="time" required>
+
+    <button type="submit">Book Appointment</button>
+  </form>
+
+</body>
 </html>
+     
+      
+     
+     
