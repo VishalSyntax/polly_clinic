@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receptionist Dashboard - AppointCare</title>
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        /* .logout-top-right {
+            position: absolute;
+            top: 20px;
+            color: #000;
+            right: 30px;
+            z-index: 100;
+        } */
+         .logout-top-right {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+        }
+        .login-btn2 {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    background-color: #f0f0f0;
+    color: black;
+    border: 1px solid black;
+    cursor: pointer;
+    font-weight: bold;
+}
+        .user-info {
+            text-align: right;
+            font-size: 14px;
+            color: #555555;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- <button class="login-btn logout-top-right" style="width:auto; padding:5px 15px;" onclick="window.location.href='index.html'">Logout</button> -->
+        <button class="login-btn2 logout-top-right" style="width:auto; padding:5px 15px;" onclick="window.location.href='index.html'">Logout</button>
+
+    <div class="login-container">
+        <div class="user-info" id="userInfo"></div>
+        <h1>Receptionist Dashboard</h1>
+        <div class="form-group">
+            <button class="login-btn" onclick="window.location.href='book-appointment.html'">Book Appointment (New Patient)</button>
+        </div>
+        <div class="form-group">
+            <button class="login-btn" onclick="window.location.href='patient_search.html'">Book Appointment (Existing Patient)</button>
+        </div>
+    </div>
+    <script>
+        // Example: Replace with actual receptionist name from your login logic///session
+        const receptionistName = localStorage.getItem('receptionistName') || 'Receptionist';
+        // Store login time if not already set
+        if (!localStorage.getItem('loginTime')) {
+            localStorage.setItem('loginTime', new Date().toLocaleString());
+        }
+        const loginTime = localStorage.getItem('loginTime');
+        document.getElementById('userInfo').textContent = `Welcome, ${receptionistName} | Login: ${loginTime}`;
+    </script>
+</body>
+</html>

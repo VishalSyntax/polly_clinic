@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppointCare - Patient Search</title>
+    <link rel="stylesheet" href="/css/search.css">
+    <script src="/js/search.js"></script>
+    <style>
+        .logout-top-right {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <button class="login-btn logout-top-right" style="width:auto; padding:5px 15px;" onclick="window.location.href='index.html'">Logout</button>
+    <div class="search-container">
+        <h1>Search existing patients </h1>
+        
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="searchTerm">Search by:</label>
+                <select id="searchType" class="form-control">
+                    <option value="id">Patient ID</option>
+                    <option value="name">Name</option>
+                    <option value="contact">Phone no.</option>
+                    <option value="email">Email</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="searchTerm">Search Term:</label>
+                <input type="text" id="searchTerm" class="form-control" placeholder="Enter search term" required>
+            </div>
+            
+            <button type="submit" class="search-btn">Search Patients</button>
+        </form>
+
+        <div id="results" class="hidden" style="margin-top: 20px;">
+            <h3>Search Results</h3>
+            <div id="patientList"></div>
+            <div id="noResults" class="hidden">No patients found.</div>
+        </div>
+    </div>
+</body>
+</html>
