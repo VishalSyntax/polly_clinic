@@ -7,6 +7,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 80vh;
+     background-image: url("/img/sono-background.png");
+     background-color: #cccccc;
 }
 .login-container {
     background-color: white;
