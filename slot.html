@@ -1,40 +1,72 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-    </title>
-  </head>
-  <body>
-    <header>
-      <nav>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="main.html">Patient Info</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="slot.html">Slot</a>
-              </li>
-            </ul>
-          </div
-          </div>
-          </nav>
-    </header>
-    <br>
-    <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-      </div>
-    </div>
-    </div>
-      <style>
 <head>
   <title>Doctor Appointment Booking</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f3f3f3;
+      margin: 0;
+      background-image: url("/img/sono-background.png");
+      background-color: #cccccc;
+    }
+    
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #2c3e50;
+      padding-top: 20px;
+    }
+    
+    .sidebar .logo {
+      text-align: center;
+      padding: 10px;
+      border-bottom: 2px solid #34495e;
+      margin-bottom: 10px;
+      background-color: white;
+      margin: 10px;
+      border-radius: 8px;
+    }
+    
+    .sidebar .logo img {
+      max-width: 220px;
+      height: auto;
+    }
+    
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 16px 20px;
+      text-decoration: none;
+      font-size: 16px;
+      border-bottom: 1px solid #34495e;
+    }
+    
+    .sidebar a:hover {
+      background-color: #34495e;
+    }
+    
+    .sidebar a.active {
+      background-color: #3498db;
+    }
+    
+    .sidebar .logout {
+      position: absolute;
+      bottom: 20px;
+      width: calc(100% - 40px);
+      background-color: #e74c3c;
+    }
+    
+    .sidebar .logout:hover {
+      background-color: #c0392b;
+    }
+    
+    .main-content {
+      margin-left: 250px;
       padding: 20px;
     }
     .appointment-form {
@@ -43,6 +75,7 @@
       border-radius: 15px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       width: 350px;
+      margin: 0 auto;
     }
 
     .appointment-form h2 {
@@ -84,8 +117,19 @@
   </style>
 </head>
 <body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/img/logo.webp" alt="Hospital Logo">
+    </div>
+    <a href="main.html">Patient Info</a>
+    <a href="slot.html" class="active">Slot Booking</a>
+    <a href="patient_search.html">Patient Search</a>
+    <a href="receptionist-dashboard.html">Dashboard</a>
+    <a href="index.html" class="logout">Logout</a>
+  </div>
 
-  <form class="appointment-form">
+  <div class="main-content">
+    <form class="appointment-form">
     <h2>Book Doctor Appointment</h2>
 
     <label for="doctor">Select Doctor</label>
@@ -119,6 +163,7 @@
 
     <button type="submit">Book Appointment</button>
   </form>
+  </div>
 
 </body>
 </html>
