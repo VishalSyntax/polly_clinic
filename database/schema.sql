@@ -33,3 +33,7 @@ CREATE TABLE receptionists (
 
 -- Insert default admin
 INSERT INTO users (username, password, user_type) VALUES ('admin', 'admin123', 'admin');
+
+UPDATE users
+SET username = 'admin', password = 'vishal123', user_type = 'admin'
+WHERE username = 'admin';
