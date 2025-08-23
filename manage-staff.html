@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Staff - AppointCare</title>
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        body {
+            background-image: url("/img/sono-background.png");
+            background-color: #cccccc;
+            margin: 0;
+        }
+        
+        .sidebar {
+          height: 100vh;
+          width: 250px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          background-color: #2c3e50;
+          padding-top: 20px;
+        }
+        
+        .sidebar .logo {
+          text-align: center;
+          padding: 10px;
+          border-bottom: 2px solid #34495e;
+          margin-bottom: 10px;
+          background-color: white;
+          margin: 10px;
+          border-radius: 8px;
+        }
+        
+        .sidebar .logo img {
+          max-width: 220px;
+          height: auto;
+        }
+        
+        .sidebar a {
+          display: block;
+          color: white;
+          padding: 16px 20px;
+          text-decoration: none;
+          font-size: 16px;
+          border-bottom: 1px solid #34495e;
+        }
+        
+        .sidebar a:hover {
+          background-color: #34495e;
+        }
+        
+        .sidebar a.active {
+          background-color: #3498db;
+        }
+        
+        .sidebar .logout {
+          position: absolute;
+          bottom: 20px;
+          width: calc(100% - 40px);
+          background-color: #e74c3c;
+        }
+        
+        .sidebar .logout:hover {
+          background-color: #c0392b;
+        }
+        
+        .main-content {
+          margin-left: 250px;
+          padding: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .staff-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .staff-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .staff-table th,
+        .staff-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .staff-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="/img/logo.webp" alt="Hospital Logo">
+      </div>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="manage-doctors.html">Manage Doctors</a>
+      <a href="manage-staff.html" class="active">Manage Staff</a>
+      <a href="reports.html">Reports</a>
+      <a href="system-settings.html">Settings</a>
+      <a href="index.html" class="logout">Logout</a>
+    </div>
+    
+    <div class="main-content">
+      <div class="login-container">
+        <h1>Add New Receptionist</h1>
+        
+        <form id="staffForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="shift">Shift Timing:</label>
+                    <select id="shift" class="form-control" required>
+                        <option value="">Select Shift</option>
+                        <option value="morning">Morning (8 AM - 4 PM)</option>
+                        <option value="evening">Evening (4 PM - 12 AM)</option>
+                        <option value="night">Night (12 AM - 8 AM)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn">Add Receptionist</button>
+        </form>
+      </div>
+      
+      <div class="staff-table">
+        <h2 style="padding: 20px; margin: 0;">Existing Receptionists</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Shift</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="staffTableBody">
+                <!-- Staff will be loaded via JDBC -->
+            </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <script>
+        document.getElementById('staffForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const staffData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                name: document.getElementById('name').value,
+                shift: document.getElementById('shift').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+            
+            // Send to backend via JDBC
+            alert('Receptionist added successfully!');
+            this.reset();
+        });
+        
+        function editStaff(id) {
+            alert(`Edit staff ${id}`);
+        }
+        
+        function toggleStatus(id) {
+            alert(`Toggle status for staff ${id}`);
+        }
+    </script>
+</body>
+</html>
