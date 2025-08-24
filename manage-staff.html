@@ -186,7 +186,7 @@
     </div>
     
     <script>
-        document.getElementById('staffForm').addEventListener('submit', function(e) {
+        document.getElementById('staffForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const staffData = {
@@ -198,9 +198,24 @@
                 email: document.getElementById('email').value
             };
             
-            // Send to backend via JDBC
-            alert('Receptionist added successfully!');
-            this.reset();
+            try {
+                const response = await fetch('/ClinicBook/addReceptionist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(staffData)
+                });
+                
+                const result = await response.json();
+                alert(result.message);
+                
+                if (result.success) {
+                    this.reset();
+                }
+            } catch (error) {
+                alert('Failed to add receptionist');
+            }
         });
         
         function editStaff(id) {
