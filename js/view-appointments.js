@@ -22,9 +22,9 @@ async function loadAppointments() {
                 <td>${appointment.patientId}</td>
                 <td>${appointment.patientName}</td>
                 <td>
-                    <button class="action-btn btn-view" onclick="viewHistory('${appointment.patientId}')">View History</button>
-                    <button class="action-btn btn-cancel" onclick="cancelAppointment(${appointment.id}, '${appointment.email}')">Cancel Appointment</button>
-                    <button class="action-btn btn-modify" onclick="modifyAppointment(${appointment.id})">Modify</button>
+                    <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
+                    <button class="btn btn-danger btn-sm me-1" onclick="cancelAppointment(${appointment.id}, '${appointment.email}')">Cancel</button>
+                    <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -49,17 +49,20 @@ async function viewHistory(patientId) {
                 const statusClass = appointment.status === 'completed' ? 'success' : 
                                    appointment.status === 'cancelled' ? 'danger' : 'info';
                 historyContent.innerHTML += `
-                    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; background-color: #f9f9f9;">
-                        <p><strong>Date:</strong> ${appointment.date} at ${appointment.time}</p>
-                        <p><strong>Doctor:</strong> ${appointment.doctorName}</p>
-                        <p><strong>Status:</strong> <span class="badge bg-${statusClass}">${appointment.status.toUpperCase()}</span></p>
-                        ${appointment.remarks ? `<p><strong>Remarks:</strong> ${appointment.remarks}</p>` : ''}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <p><strong>Date:</strong> ${appointment.date} at ${appointment.time}</p>
+                            <p><strong>Doctor:</strong> ${appointment.doctorName}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-${statusClass}">${appointment.status.toUpperCase()}</span></p>
+                            ${appointment.remarks ? `<p><strong>Remarks:</strong> ${appointment.remarks}</p>` : ''}
+                        </div>
                     </div>
                 `;
             });
         }
         
-        document.getElementById('historyModal').style.display = 'block';
+        const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+        modal.show();
     } catch (error) {
         console.error('Error loading patient history:', error);
         alert('Error loading patient history');
@@ -117,17 +120,24 @@ function modifyAppointment(appointmentId) {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('modifyDate').min = today;
     
-    document.getElementById('modifyModal').style.display = 'block';
+    const modal = new bootstrap.Modal(document.getElementById('modifyModal'));
+    modal.show();
 }
 
 function closeHistoryModal() {
-    document.getElementById('historyModal').style.display = 'none';
+    const modal = bootstrap.Modal.getInstance(document.getElementById('historyModal'));
+    if (modal) modal.hide();
 }
 
 function closeModifyModal() {
-    document.getElementById('modifyModal').style.display = 'none';
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modifyModal'));
+    if (modal) modal.hide();
     document.getElementById('modifyForm').reset();
     currentAppointmentId = null;
+}
+
+function updateAppointment() {
+    document.getElementById('modifyForm').dispatchEvent(new Event('submit'));
 }
 
 // Handle modify form submission
