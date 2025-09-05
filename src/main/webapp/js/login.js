@@ -1,81 +1,99 @@
 document.addEventListener('DOMContentLoaded', function() {
     const adminToggle = document.getElementById('adminToggle');
-    const userTypeSelect = document.getElementById('userType');
+    const adminBtn = document.getElementById('adminBtn');
+    const receptionistBtn = document.getElementById('receptionistBtn');
+    const doctorBtn = document.getElementById('doctorBtn');
+    const loginForm = document.getElementById('loginForm');
     
-    if (adminToggle && userTypeSelect) {
-        adminToggle.addEventListener('change', function() {
-            if (this.checked) {
-                // Show admin option
-                let adminOption = userTypeSelect.querySelector('option[value="admin"]');
-                if (!adminOption) {
-                    adminOption = document.createElement('option');
-                    adminOption.value = 'admin';
-                    adminOption.textContent = 'Admin';
-                    userTypeSelect.appendChild(adminOption);
+    let selectedUserType = 'receptionist'; // Default selection
+    
+    // Admin toggle functionality
+    if (adminToggle) {
+        adminToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (adminBtn.classList.contains('hidden')) {
+                adminBtn.classList.remove('hidden');
+            } else {
+                adminBtn.classList.add('hidden');
+                if (selectedUserType === 'admin') {
+                    selectUserType('receptionist');
+                }
+            }
+        });
+    }
+    
+    // User type button functionality
+    receptionistBtn.addEventListener('click', () => selectUserType('receptionist'));
+    doctorBtn.addEventListener('click', () => selectUserType('doctor'));
+    adminBtn.addEventListener('click', () => selectUserType('admin'));
+    
+    function selectUserType(type) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to selected button
+        document.getElementById(type + 'Btn').classList.add('active');
+        
+        selectedUserType = type;
+    }
+    
+    // Form submission
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await login();
+    });
+    
+    async function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        try {
+            const response = await fetch('login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&userType=${encodeURIComponent(selectedUserType)}`
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Store user info in localStorage
+                localStorage.setItem('userId', result.userId);
+                localStorage.setItem('username', username);
+                localStorage.setItem('userType', result.userType);
+                localStorage.setItem('loginTime', new Date().toISOString());
+                if (result.doctorName) {
+                    localStorage.setItem('doctorName', result.doctorName);
+                }
+                if (result.name) {
+                    localStorage.setItem('userName', result.name);
+                }
+                
+                // Redirect based on user type
+                switch(result.userType) {
+                    case 'admin':
+                        window.location.href = 'admin-dashboard.html';
+                        break;
+                    case 'doctor':
+                        window.location.href = 'doctor-appointments.html';
+                        break;
+                    case 'receptionist':
+                        window.location.href = 'receptionist-dashboard.html';
+                        break;
                 }
             } else {
-                // Hide admin option and reset to receptionist
-                const adminOption = userTypeSelect.querySelector('option[value="admin"]');
-                if (adminOption) {
-                    adminOption.remove();
-                }
-                userTypeSelect.value = 'receptionist';
+                alert(result.message || 'Login failed');
             }
-        });
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Login failed. Please try again.');
+        }
     }
 });
-
-async function login() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const userType = document.getElementById('userType').value;
-    
-    if (!username || !password || !userType) {
-        alert('Please fill in all fields');
-        return;
-    }
-    
-    try {
-        const response = await fetch('login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&userType=${encodeURIComponent(userType)}`
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Store user info in localStorage
-            localStorage.setItem('userId', result.userId);
-            localStorage.setItem('username', result.username);
-            localStorage.setItem('userType', result.userType);
-            localStorage.setItem('loginTime', new Date().toISOString());
-            if (result.doctorName) {
-                localStorage.setItem('doctorName', result.doctorName);
-            }
-            if (result.name) {
-                localStorage.setItem('userName', result.name);
-            }
-            
-            // Redirect based on user type
-            switch(result.userType) {
-                case 'admin':
-                    window.location.href = 'admin-dashboard.html';
-                    break;
-                case 'doctor':
-                    window.location.href = 'doctor-appointments.html';
-                    break;
-                case 'receptionist':
-                    window.location.href = 'receptionist-dashboard.html';
-                    break;
-            }
-        } else {
-            alert(result.message || 'Login failed');
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        alert('Login failed. Please try again.');
-    }
-}
