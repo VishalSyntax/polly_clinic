@@ -30,11 +30,17 @@ async function searchAppointments() {
         if (doctorId && localStorage.getItem('userType') === 'doctor') {
             url += '&doctorId=' + doctorId;
         }
+        console.log('Search URL:', url);
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const appointments = await response.json();
+        console.log('Search results:', appointments);
         displayAppointments(appointments);
     } catch (error) {
         console.error('Error searching appointments:', error);
+        alert('Error searching appointments: ' + error.message);
     }
 }
 
