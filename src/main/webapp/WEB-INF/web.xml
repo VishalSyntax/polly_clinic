@@ -222,6 +222,16 @@
         <url-pattern>/getPrescription</url-pattern>
     </servlet-mapping>
     
+    <!-- Check Availability Servlet -->
+    <servlet>
+        <servlet-name>CheckAvailabilityServlet</servlet-name>
+        <servlet-class>CheckAvailabilityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckAvailabilityServlet</servlet-name>
+        <url-pattern>/checkAvailability</url-pattern>
+    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>SearchPatientsServlet</servlet-name>
         <url-pattern>/searchPatients</url-pattern>
