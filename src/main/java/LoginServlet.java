@@ -1,80 +1,67 @@
-import java.io.*;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import com.google.gson.JsonObject;
 
-@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private UserDAO userDAO = new UserDAO();
-    
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
         
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String userType = request.getParameter("userType");
         
-        if (userDAO.authenticateUser(username, password, userType)) {
-            HttpSession session = request.getSession();
-            session.setAttribute("username", username);
-            session.setAttribute("userType", userType);
+        JsonObject jsonResponse = new JsonObject();
+        
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT u.id, u.user_type, d.name as doctor_name, r.name as receptionist_name " +
+                        "FROM users u " +
+                        "LEFT JOIN doctors d ON u.id = d.user_id " +
+                        "LEFT JOIN receptionists r ON u.id = r.user_id " +
+                        "WHERE u.username = ? AND u.password = ? AND u.is_active = TRUE";
             
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\": true, \"userType\": \"" + userType + "\"}");
-        } else {
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\": false, \"message\": \"Invalid credentials\"}");
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                jsonResponse.addProperty("success", true);
+                jsonResponse.addProperty("userType", rs.getString("user_type"));
+                jsonResponse.addProperty("userId", rs.getInt("id"));
+                
+                String userType = rs.getString("user_type");
+                if ("doctor".equals(userType)) {
+                    String doctorName = rs.getString("doctor_name");
+                    jsonResponse.addProperty("name", doctorName);
+                    jsonResponse.addProperty("doctorName", doctorName);
+                    jsonResponse.addProperty("redirectUrl", "doctor-appointments.html");
+                } else if ("receptionist".equals(userType)) {
+                    String receptionistName = rs.getString("receptionist_name");
+                    jsonResponse.addProperty("name", receptionistName);
+                    jsonResponse.addProperty("userName", receptionistName);
+                    jsonResponse.addProperty("redirectUrl", "receptionist-dashboard.html");
+                } else if ("admin".equals(userType)) {
+                    jsonResponse.addProperty("name", "Administrator");
+                    jsonResponse.addProperty("redirectUrl", "admin-dashboard.html");
+                }
+            } else {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Invalid username or password");
+            }
+        } catch (Exception e) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Database error: " + e.getMessage());
         }
-    }
-}
-
-@WebServlet("/addDoctor")
-class AddDoctorServlet extends HttpServlet {
-    private UserDAO userDAO = new UserDAO();
-    
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
         
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String specialization = request.getParameter("specialization");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String license = request.getParameter("license");
-        
-        boolean success = userDAO.addDoctor(username, password, name, specialization, phone, email, license);
-        
-        response.setContentType("application/json");
-        if (success) {
-            response.getWriter().write("{\"success\": true, \"message\": \"Doctor added successfully\"}");
-        } else {
-            response.getWriter().write("{\"success\": false, \"message\": \"Failed to add doctor\"}");
-        }
-    }
-}
-
-@WebServlet("/addReceptionist")
-class AddReceptionistServlet extends HttpServlet {
-    private UserDAO userDAO = new UserDAO();
-    
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
-        String shift = request.getParameter("shift");
-        
-        boolean success = userDAO.addReceptionist(username, password, name, phone, email, shift);
-        
-        response.setContentType("application/json");
-        if (success) {
-            response.getWriter().write("{\"success\": true, \"message\": \"Receptionist added successfully\"}");
-        } else {
-            response.getWriter().write("{\"success\": false, \"message\": \"Failed to add receptionist\"}");
-        }
+        out.print(jsonResponse.toString());
     }
 }

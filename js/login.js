@@ -1,102 +1,99 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const adminToggle = document.getElementById('adminToggle');
+    const adminBtn = document.getElementById('adminBtn');
     const receptionistBtn = document.getElementById('receptionistBtn');
     const doctorBtn = document.getElementById('doctorBtn');
-    const adminBtn = document.getElementById('adminBtn');
-    const adminToggle = document.getElementById('adminToggle');
     const loginForm = document.getElementById('loginForm');
     
-    let userType = 'receptionist';
-    let adminVisible = false;
+    let selectedUserType = 'receptionist'; // Default selection
     
-
-    adminToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        adminVisible = !adminVisible;
-        
-        if (adminVisible) {
-            adminBtn.classList.remove('hidden');
-            adminToggle.textContent = 'Hide Admin';
-        } else {
-            adminBtn.classList.add('hidden');
-            
-            if (userType === 'admin') {
-                receptionistBtn.classList.add('active');
-                adminBtn.classList.remove('active');
-                userType = 'receptionist';
+    // Admin toggle functionality
+    if (adminToggle) {
+        adminToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (adminBtn.classList.contains('hidden')) {
+                adminBtn.classList.remove('hidden');
+            } else {
+                adminBtn.classList.add('hidden');
+                if (selectedUserType === 'admin') {
+                    selectUserType('receptionist');
+                }
             }
-            
-            adminToggle.textContent = 'Admin Login';
-        }
-    });
+        });
+    }
     
-    receptionistBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        receptionistBtn.classList.add('active');
-        doctorBtn.classList.remove('active');
-        adminBtn.classList.remove('active');
-        userType = 'receptionist';
-    });
+    // User type button functionality
+    receptionistBtn.addEventListener('click', () => selectUserType('receptionist'));
+    doctorBtn.addEventListener('click', () => selectUserType('doctor'));
+    adminBtn.addEventListener('click', () => selectUserType('admin'));
     
-    doctorBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        doctorBtn.classList.add('active');
-        receptionistBtn.classList.remove('active');
-        adminBtn.classList.remove('active');
-        userType = 'doctor';
-    });
+    function selectUserType(type) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to selected button
+        document.getElementById(type + 'Btn').classList.add('active');
+        
+        selectedUserType = type;
+    }
     
-    adminBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        adminBtn.classList.add('active');
-        receptionistBtn.classList.remove('active');
-        doctorBtn.classList.remove('active');
-        userType = 'admin';
-    });
-    
+    // Form submission
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        await login();
+    });
+    
+    async function login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-
+        
         if (!username || !password) {
-            alert('Please enter both username and password');
+            alert('Please fill in all fields');
             return;
         }
         
         try {
-            const response = await fetch('/ClinicBook/login', {
+            const response = await fetch('login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&userType=${encodeURIComponent(userType)}`
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&userType=${encodeURIComponent(selectedUserType)}`
             });
             
             const result = await response.json();
             
             if (result.success) {
-                localStorage.setItem('userType', userType);
+                // Store user info in localStorage
+                localStorage.setItem('userId', result.userId);
                 localStorage.setItem('username', username);
-                localStorage.setItem('loginTime', new Date().toLocaleString());
+                localStorage.setItem('userType', result.userType);
+                localStorage.setItem('loginTime', new Date().toISOString());
+                if (result.doctorName) {
+                    localStorage.setItem('doctorName', result.doctorName);
+                }
+                if (result.name) {
+                    localStorage.setItem('userName', result.name);
+                }
                 
-                switch(userType) {
-                    case 'receptionist':
-                        localStorage.setItem('receptionistName', username);
-                        window.location.href = 'receptionist-dashboard.html';
-                        break;
-                    case 'doctor':
-                        window.location.href = 'Doctor_Interface/doctor.html';
-                        break;
+                // Redirect based on user type
+                switch(result.userType) {
                     case 'admin':
                         window.location.href = 'admin-dashboard.html';
                         break;
+                    case 'doctor':
+                        window.location.href = 'doctor-appointments.html';
+                        break;
+                    case 'receptionist':
+                        window.location.href = 'receptionist-dashboard.html';
+                        break;
                 }
             } else {
-                alert(result.message || 'Invalid credentials');
+                alert(result.message || 'Login failed');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Please check server connection.');
+            alert('Login failed. Please try again.');
         }
-    });
+    }
 });

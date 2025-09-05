@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Time Slots - AppointCare</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        .timeslot-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .slot-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .slot-item .remove-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="img/logo.webp" alt="Hospital Logo">
+      </div>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="manage-doctors.html">Manage Doctors</a>
+      <a href="manage-staff.html">Manage Staff</a>
+      <a href="manage-timeslots.html" class="active">Time Slots</a>
+      <a href="reports.html">Reports</a>
+      <a href="system-settings.html">Settings</a>
+      <a href="index.html" class="logout">Logout</a>
+    </div>
+    
+    <div class="main-content">
+      <div class="login-container">
+        <h1>Manage Time Slots</h1>
+        
+        <div class="timeslot-form">
+            <h3>Add New Time Slot</h3>
+            <form id="timeslotForm">
+                <div class="form-group">
+                    <label for="newSlotTime">Time Slot:</label>
+                    <input type="time" id="newSlotTime" class="form-control" required>
+                </div>
+                <button type="submit" class="login-btn">Add Time Slot</button>
+            </form>
+        </div>
+        
+        <div class="timeslot-form">
+            <h3>Current Time Slots</h3>
+            <div class="slots-grid" id="slotsGrid">
+                <!-- Time slots will be loaded here -->
+            </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="js/manage-timeslots.js"></script>
+</body>
+</html>
