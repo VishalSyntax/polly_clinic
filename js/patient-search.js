@@ -1,6 +1,18 @@
 // Patient search functionality
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchForm').addEventListener('submit', searchPatients);
+    
+    // Event delegation for book appointment buttons
+    document.addEventListener('click', function(e) {
+        console.log('Click detected on:', e.target);
+        if (e.target.classList.contains('book-appointment-btn')) {
+            console.log('Book appointment button clicked');
+            const patientId = e.target.getAttribute('data-patient-id');
+            const patientName = e.target.getAttribute('data-patient-name');
+            console.log('Patient ID:', patientId, 'Patient Name:', patientName);
+            bookAppointment(patientId, patientName);
+        }
+    });
 });
 
 async function searchPatients(event) {
@@ -51,7 +63,7 @@ function displayResults(patients) {
                         </table>
                     </div>
                     <div style="margin-top: 10px;">
-                        <button class="login-btn" onclick="bookAppointment('${patient.id}', '${patient.name}')">Book Appointment</button>
+                        <button type="button" class="login-btn book-appointment-btn" data-patient-id="${patient.id}" data-patient-name="${patient.name.replace(/'/g, '&apos;').replace(/"/g, '&quot;')}">Book Appointment</button>
                     </div>
                 </div>
             </div>
@@ -59,6 +71,28 @@ function displayResults(patients) {
     }
 }
 
-function bookAppointment(patientId, patientName) {
-    window.location.href = `appointment-booking.html?patientId=${patientId}&patientName=${encodeURIComponent(patientName)}`;
+async function bookAppointment(patientId, patientName) {
+    console.log('bookAppointment called with:', patientId, patientName);
+    try {
+        console.log('Checking patient status...');
+        // Check patient's last appointment status
+        const response = await fetch(`checkPatientStatus?patientId=${encodeURIComponent(patientId)}`);
+        console.log('Response received:', response);
+        const statusData = await response.json();
+        console.log('Status data:', statusData);
+        
+        if (statusData.hasScheduledAppointment) {
+            alert(`Appointment already booked for ${statusData.doctorName}`);
+            return;
+        }
+        
+        console.log('Proceeding to appointment booking page...');
+        // Proceed with booking if no scheduled appointment
+        window.location.href = `appointment-booking.html?patientId=${patientId}&patientName=${encodeURIComponent(patientName)}`;
+    } catch (error) {
+        console.error('Error checking patient status:', error);
+        alert('Error checking patient status. Proceeding with booking.');
+        // If check fails, proceed with booking (fallback)
+        window.location.href = `appointment-booking.html?patientId=${patientId}&patientName=${encodeURIComponent(patientName)}`;
+    }
 }
