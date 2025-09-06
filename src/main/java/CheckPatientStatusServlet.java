@@ -48,18 +48,16 @@ public class CheckPatientStatusServlet extends HttpServlet {
             JsonObject statusResponse = new JsonObject();
             
             if (rs.next()) {
+                // Found last appointment
                 String status = rs.getString("status");
                 String doctorName = rs.getString("doctor_name");
-                
-                if ("scheduled".equals(status)) {
-                    statusResponse.addProperty("hasScheduledAppointment", true);
-                    statusResponse.addProperty("doctorName", doctorName);
-                } else {
-                    statusResponse.addProperty("hasScheduledAppointment", false);
-                }
+                statusResponse.addProperty("lastAppointmentStatus", status);
+                statusResponse.addProperty("doctorName", doctorName);
+                statusResponse.addProperty("hasScheduledAppointment", "scheduled".equals(status));
             } else {
-                // No appointments found - new patient
+                // No appointments found
                 statusResponse.addProperty("hasScheduledAppointment", false);
+                statusResponse.addProperty("lastAppointmentStatus", "none");
             }
             
             out.print(new Gson().toJson(statusResponse));

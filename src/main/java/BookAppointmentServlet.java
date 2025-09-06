@@ -1,4 +1,5 @@
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,6 +13,7 @@ import java.sql.Statement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+@WebServlet("/bookAppointment")
 public class BookAppointmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -31,21 +33,28 @@ public class BookAppointmentServlet extends HttpServlet {
         try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
             
-            // Generate patient ID
-            String patientId = "P" + System.currentTimeMillis();
+            String patientId;
             
-            // Insert patient
-            String patientSql = "INSERT INTO patients (patient_id, name, address, contact_number, email) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement patientStmt = conn.prepareStatement(patientSql);
-            patientStmt.setString(1, patientId);
-            patientStmt.setString(2, requestData.get("patientName").getAsString());
-            patientStmt.setString(3, requestData.get("address").getAsString());
-            patientStmt.setString(4, requestData.get("contactNumber").getAsString());
-            patientStmt.setString(5, requestData.get("email").getAsString());
-            patientStmt.executeUpdate();
+            // Check if this is an existing patient
+            if (requestData.has("patientId") && !requestData.get("patientId").getAsString().isEmpty()) {
+                // Existing patient - use provided ID
+                patientId = requestData.get("patientId").getAsString();
+            } else {
+                // New patient - generate ID and insert patient
+                patientId = "P" + System.currentTimeMillis();
+                
+                String patientSql = "INSERT INTO patients (patient_id, name, address, contact_number, email) VALUES (?, ?, ?, ?, ?)";
+                PreparedStatement patientStmt = conn.prepareStatement(patientSql);
+                patientStmt.setString(1, patientId);
+                patientStmt.setString(2, requestData.get("patientName").getAsString());
+                patientStmt.setString(3, requestData.get("address").getAsString());
+                patientStmt.setString(4, requestData.get("contactNumber").getAsString());
+                patientStmt.setString(5, requestData.get("email").getAsString());
+                patientStmt.executeUpdate();
+            }
             
             // Insert appointment
-            String appointmentSql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time) VALUES (?, ?, ?, ?)";
+            String appointmentSql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, 'scheduled')";
             PreparedStatement appointmentStmt = conn.prepareStatement(appointmentSql);
             appointmentStmt.setString(1, patientId);
             appointmentStmt.setInt(2, requestData.get("doctorId").getAsInt());
