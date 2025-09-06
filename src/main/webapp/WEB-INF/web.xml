@@ -232,6 +232,11 @@
         <url-pattern>/checkAvailability</url-pattern>
     </servlet-mapping>
     
+    <!-- Search Patients Servlet -->
+    <servlet>
+        <servlet-name>SearchPatientsServlet</servlet-name>
+        <servlet-class>SearchPatientsServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SearchPatientsServlet</servlet-name>
         <url-pattern>/searchPatients</url-pattern>
