@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppointCare - Patient Search</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/appointments-table.css">
     <link rel="stylesheet" href="css/bootstrap-sidebar-override.css">
+    
 </head>
 <body>
     <div class="sidebar">
@@ -51,7 +52,48 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/patient-search.js?v=2"></script>
+
+ 
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Book Appointment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quickBookingForm">
+                        <div class="mb-3">
+                            <label class="form-label">Patient: <span id="modalPatientName"></span></label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modalDoctor" class="form-label">Select Doctor:</label>
+                            <select id="modalDoctor" class="form-select" required>
+                                <option value="">Choose Doctor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modalDate" class="form-label">Select Date:</label>
+                            <input type="date" id="modalDate" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Select Time Slot:</label>
+                            <div class="time-slots" id="modalTimeSlots">
+                                <!-- Time slots will be loaded dynamically -->
+                            </div>
+                            <input type="hidden" id="modalSelectedTime" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitQuickBooking()">Book Appointment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bootstrap.bundle.min_2.js"></script>
+    <script src="js/patient-search.js?v=27"></script>
 </body>
 </html>
