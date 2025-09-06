@@ -43,7 +43,7 @@ function displayResults(patients) {
                 <p><strong>Name:</strong> ${patient.name}</p>
                 <p><strong>Contact:</strong> ${patient.contact}</p>
                 <p><strong>Email:</strong> ${patient.email}</p>
-                <button class="login-btn" onclick="bookAppointment(${patient.id}, '${patient.name}')">Book Appointment</button>
+                <button type="button" class="login-btn book-appointment-btn" data-patient-id="${patient.id}" data-patient-name="${patient.name.replace(/'/g, '&apos;').replace(/"/g, '&quot;')}">Book Appointment</button>
             </div>
         `).join('');
     }

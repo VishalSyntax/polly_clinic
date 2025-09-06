@@ -87,8 +87,8 @@ async function checkAvailability() {
     if (!doctorId || !date) return;
     
     try {
-        // Check availability functionality would be implemented here
-        const unavailableSlots = await response.json();
+        const response = await fetch(`checkAvailability?doctorId=${doctorId}&date=${date}`);
+        const bookedSlots = await response.json();
         
         // Reset all slots
         document.querySelectorAll('.time-slot').forEach(slot => {
@@ -96,9 +96,12 @@ async function checkAvailability() {
         });
         
         // Mark unavailable slots
-        unavailableSlots.forEach(time => {
-            const slot = document.querySelector(`.time-slot:contains('${time}')`);
-            if (slot) slot.classList.add('unavailable');
+        bookedSlots.forEach(time => {
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                if (slot.textContent === time) {
+                    slot.classList.add('unavailable');
+                }
+            });
         });
     } catch (error) {
         console.error('Error checking availability:', error);

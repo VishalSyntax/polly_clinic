@@ -26,7 +26,7 @@ public class SearchCompletedAppointmentsServlet extends HttpServlet {
                         "FROM appointments a " +
                         "JOIN patients p ON a.patient_id = p.patient_id " +
                         "JOIN doctors d ON a.doctor_id = d.user_id " +
-                        "WHERE a.status = 'completed' AND (a.patient_id LIKE ? OR p.contact_number LIKE ? OR p.email LIKE ?)";
+                        "WHERE a.status = 'completed' AND (a.patient_id LIKE ? OR p.contact_number LIKE ? OR (p.email IS NOT NULL AND p.email LIKE ?))";
             
             // Add doctor filter if doctorId is provided
             if (doctorId != null && !doctorId.isEmpty()) {

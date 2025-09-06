@@ -242,6 +242,16 @@
         <url-pattern>/searchPatients</url-pattern>
     </servlet-mapping>
     
+    <!-- Check Patient Status Servlet -->
+    <servlet>
+        <servlet-name>CheckPatientStatusServlet</servlet-name>
+        <servlet-class>CheckPatientStatusServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckPatientStatusServlet</servlet-name>
+        <url-pattern>/checkPatientStatus</url-pattern>
+    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>GetPatientHistoryServlet</servlet-name>
         <url-pattern>/getPatientHistory</url-pattern>

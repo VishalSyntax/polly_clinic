@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
-@WebServlet("/searchPatients")
 public class SearchPatientsServlet extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -31,7 +30,7 @@ public class SearchPatientsServlet extends HttpServlet {
             
             switch (searchType) {
                 case "id":
-                    sql = "SELECT * FROM patients WHERE id = ?";
+                    sql = "SELECT * FROM patients WHERE patient_id = ?";
                     break;
                 case "contact":
                     sql = "SELECT * FROM patients WHERE contact_number LIKE ?";
@@ -46,7 +45,7 @@ public class SearchPatientsServlet extends HttpServlet {
             PreparedStatement stmt = conn.prepareStatement(sql);
             
             if (searchType.equals("id")) {
-                stmt.setInt(1, Integer.parseInt(searchTerm));
+                stmt.setString(1, searchTerm);
             } else {
                 stmt.setString(1, "%" + searchTerm + "%");
             }
@@ -55,7 +54,7 @@ public class SearchPatientsServlet extends HttpServlet {
             
             while (rs.next()) {
                 Patient patient = new Patient();
-                patient.id = rs.getInt("id");
+                patient.id = rs.getString("patient_id");
                 patient.name = rs.getString("name");
                 patient.contact = rs.getString("contact_number");
                 patient.email = rs.getString("email");
@@ -72,7 +71,7 @@ public class SearchPatientsServlet extends HttpServlet {
     }
     
     class Patient {
-        int id;
+        String id;
         String name;
         String contact;
         String email;
