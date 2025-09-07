@@ -1,37 +1,106 @@
 emailjs.init("DaTM_GydmK934LWAm");
 
+let allAppointments = [];
+
 document.addEventListener('DOMContentLoaded', function() {
     loadAppointments();
+    
+    // Add event listeners for filter radio buttons
+    document.querySelectorAll('input[name="appointmentFilter"]').forEach(radio => {
+        radio.addEventListener('change', filterAppointments);
+    });
+    
+    // Handle modify form submission
+    document.getElementById('modifyForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const newDate = document.getElementById('modifyDate').value;
+        const newTime = document.getElementById('modifyTime').value;
+        
+        try {
+            const response = await fetch('modifyAppointment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    appointmentId: currentAppointmentId,
+                    newDate: newDate,
+                    newTime: newTime
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Appointment updated successfully');
+                closeModifyModal();
+                loadAppointments();
+            } else {
+                alert('Failed to update appointment: ' + (result.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error updating appointment:', error);
+            alert('Error updating appointment');
+        }
+    });
 });
 
 async function loadAppointments() {
     try {
         const response = await fetch('getAppointments');
-        const appointments = await response.json();
-        
-        const tbody = document.getElementById('appointmentsTableBody');
-        tbody.innerHTML = '';
+        allAppointments = await response.json();
         
         // Sort appointments in descending order (upcoming first)
-        appointments.sort((a, b) => new Date(b.date) - new Date(a.date));
+        allAppointments.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        appointments.forEach(appointment => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${appointment.date}</td>
-                <td>${appointment.patientId}</td>
-                <td>${appointment.patientName}</td>
-                <td>
-                    <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
-                    <button class="btn btn-danger btn-sm me-1" onclick="cancelAppointment(${appointment.id}, '${appointment.email}')">Cancel</button>
-                    <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        // Apply current filter
+        filterAppointments();
     } catch (error) {
         console.error('Error loading appointments:', error);
     }
+}
+
+function filterAppointments() {
+    const filterValue = document.querySelector('input[name="appointmentFilter"]:checked').value;
+    const today = new Date().toISOString().split('T')[0];
+    
+    console.log('Filter value:', filterValue);
+    console.log('Today:', today);
+    console.log('All appointments:', allAppointments);
+    
+    let filteredAppointments;
+    if (filterValue === 'today') {
+        filteredAppointments = allAppointments.filter(appointment => {
+            console.log('Comparing:', appointment.date, 'with', today);
+            return appointment.date === today;
+        });
+    } else {
+        filteredAppointments = allAppointments;
+    }
+    
+    console.log('Filtered appointments:', filteredAppointments);
+    displayAppointments(filteredAppointments);
+}
+
+function displayAppointments(appointments) {
+    const tbody = document.getElementById('appointmentsTableBody');
+    tbody.innerHTML = '';
+    
+    appointments.forEach(appointment => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${appointment.date}</td>
+            <td>${appointment.patientId}</td>
+            <td>${appointment.patientName}</td>
+            <td>
+                <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
+                <button class="btn btn-danger btn-sm me-1" onclick="cancelAppointment(${appointment.id}, '${appointment.email}')">Cancel</button>
+                <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
 }
 
 async function viewHistory(patientId) {
@@ -73,25 +142,29 @@ async function cancelAppointment(appointmentId, email) {
     if (!confirm('Are you sure you want to cancel this appointment?')) return;
     
     try {
+        console.log('Cancelling appointment ID:', appointmentId);
         const response = await fetch('cancelAppointment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ appointmentId })
+            body: JSON.stringify({ appointmentId: parseInt(appointmentId) })
         });
         
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response result:', result);
         
         if (result.success) {
             await sendCancellationEmail(email, result.appointmentDetails);
             alert('Appointment cancelled successfully');
             loadAppointments();
         } else {
-            alert('Failed to cancel appointment');
+            alert('Failed to cancel appointment: ' + (result.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error cancelling appointment:', error);
+        alert('Error cancelling appointment: ' + error.message);
     }
 }
 
@@ -140,39 +213,3 @@ function updateAppointment() {
     document.getElementById('modifyForm').dispatchEvent(new Event('submit'));
 }
 
-// Handle modify form submission
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('modifyForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const newDate = document.getElementById('modifyDate').value;
-        const newTime = document.getElementById('modifyTime').value;
-        
-        try {
-            const response = await fetch('modifyAppointment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    appointmentId: currentAppointmentId,
-                    newDate: newDate,
-                    newTime: newTime
-                })
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Appointment updated successfully');
-                closeModifyModal();
-                loadAppointments(); // Reload the appointments table
-            } else {
-                alert('Failed to update appointment: ' + (result.message || 'Unknown error'));
-            }
-        } catch (error) {
-            console.error('Error updating appointment:', error);
-            alert('Error updating appointment');
-        }
-    });
-});
