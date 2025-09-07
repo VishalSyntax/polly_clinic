@@ -62,8 +62,8 @@ function displayAppointments(appointments) {
             <td>${appointment.contactNumber}</td>
             <td>${appointment.doctorName}</td>
             <td>
-                <button class="action-btn btn-info" onclick="viewPrescription('${appointment.id}')">View Prescription</button>
-                <button class="action-btn btn-secondary" onclick="viewRemarks('${appointment.patientId}')">View Remarks</button>
+                <button class="btn btn-info btn-sm me-1" onclick="viewPrescription('${appointment.id}')">View Prescription</button>
+                <button class="btn btn-secondary btn-sm" onclick="viewRemarks('${appointment.patientId}')">View Remarks</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -77,22 +77,25 @@ async function viewPrescription(appointmentId) {
         
         const content = document.getElementById('prescriptionContent');
         if (prescription.length === 0) {
-            content.innerHTML = '<p>No prescription found for this appointment.</p>';
+            content.innerHTML = '<div class="alert alert-info">No prescription found for this appointment.</div>';
         } else {
             let html = '';
             prescription.forEach(med => {
                 html += `
-                    <div class="prescription-item">
-                        <strong>Medicine:</strong> ${med.medicineName}<br>
-                        <strong>Quantity:</strong> ${med.quantity}<br>
-                        <strong>Timing:</strong> ${med.timing}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <strong>Medicine:</strong> ${med.medicineName}<br>
+                            <strong>Quantity:</strong> ${med.quantity}<br>
+                            <strong>Timing:</strong> ${med.timing}
+                        </div>
                     </div>
                 `;
             });
             content.innerHTML = html;
         }
         
-        document.getElementById('prescriptionModal').style.display = 'block';
+        const modal = new bootstrap.Modal(document.getElementById('prescriptionModal'));
+        modal.show();
     } catch (error) {
         console.error('Error loading prescription:', error);
         alert('Error loading prescription');
@@ -100,7 +103,8 @@ async function viewPrescription(appointmentId) {
 }
 
 function closePrescriptionModal() {
-    document.getElementById('prescriptionModal').style.display = 'none';
+    const modal = bootstrap.Modal.getInstance(document.getElementById('prescriptionModal'));
+    if (modal) modal.hide();
 }
 
 async function viewRemarks(patientId) {

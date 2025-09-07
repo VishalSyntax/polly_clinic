@@ -1,9 +1,6 @@
 body {
     background-image: url("../img/sono-background.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-color: #cccccc;
     margin: 0;
 }
 
@@ -65,13 +62,21 @@ body {
     padding: 20px;
 }
 
-.current-time {
+.search-section {
     background: white;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 8px;
     margin-bottom: 20px;
-    text-align: center;
-    font-weight: bold;
+}
+
+.search-row {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.search-group {
+    flex: 1;
 }
 
 .appointments-table {
@@ -111,15 +116,14 @@ body {
     background-color: #17a2b8; 
 }
 
-.btn-success { 
-    background-color: #28a745; 
+.btn-secondary { 
+    background-color: #6c757d; 
 }
 
-.action-btn:hover {
-    opacity: 0.8;
+.btn-primary { 
+    background-color: #007bff; 
 }
 
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -128,35 +132,36 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
-    background-color: white;
+    background-color: #fefefe;
     margin: 5% auto;
     padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
     border-radius: 8px;
-    width: 80%;
-    max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
 .close {
+    color: #aaa;
+    float: right;
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
 
 .close:hover {
-    color: red;
+    color: black;
+}
+
+.prescription-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    background-color: #f9f9f9;
 }

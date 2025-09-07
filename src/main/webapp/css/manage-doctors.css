@@ -1,0 +1,37 @@
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.doctors-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.doctors-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.doctors-table th,
+.doctors-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.doctors-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.doctors-table h2 {
+    padding: 20px;
+    margin: 0;
+}

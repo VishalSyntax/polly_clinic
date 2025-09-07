@@ -30,36 +30,31 @@ public class CancelAppointmentServlet extends HttpServlet {
         try (Connection conn = DatabaseConnection.getConnection()) {
             int appointmentId = requestData.get("appointmentId").getAsInt();
             
-            // Get appointment details first
-            String getDetailsSql = "SELECT a.appointment_date, a.appointment_time, p.name as patient_name, " +
-                                  "p.email, d.name as doctor_name " +
-                                  "FROM appointments a " +
-                                  "JOIN patients p ON a.patient_id = p.patient_id " +
-                                  "JOIN doctors d ON a.doctor_id = d.user_id " +
-                                  "WHERE a.id = ?";
-            
-            PreparedStatement getStmt = conn.prepareStatement(getDetailsSql);
-            getStmt.setInt(1, appointmentId);
-            ResultSet rs = getStmt.executeQuery();
+            // First check if appointment exists and get basic details
+            String checkSql = "SELECT appointment_date, appointment_time, patient_id, doctor_id FROM appointments WHERE id = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setInt(1, appointmentId);
+            ResultSet rs = checkStmt.executeQuery();
             
             if (rs.next()) {
-                JsonObject appointmentDetails = new JsonObject();
-                appointmentDetails.addProperty("patientName", rs.getString("patient_name"));
-                appointmentDetails.addProperty("date", rs.getString("appointment_date"));
-                appointmentDetails.addProperty("time", rs.getString("appointment_time"));
-                appointmentDetails.addProperty("doctorName", rs.getString("doctor_name"));
-                
-                // Update appointment status
+                // Update appointment status first
                 String updateSql = "UPDATE appointments SET status = 'cancelled' WHERE id = ?";
                 PreparedStatement updateStmt = conn.prepareStatement(updateSql);
                 updateStmt.setInt(1, appointmentId);
-                updateStmt.executeUpdate();
+                int rowsUpdated = updateStmt.executeUpdate();
+                
+                // Create simple appointment details
+                JsonObject appointmentDetails = new JsonObject();
+                appointmentDetails.addProperty("patientName", "Patient");
+                appointmentDetails.addProperty("date", rs.getString("appointment_date"));
+                appointmentDetails.addProperty("time", rs.getString("appointment_time"));
+                appointmentDetails.addProperty("doctorName", "Doctor");
                 
                 jsonResponse.addProperty("success", true);
                 jsonResponse.add("appointmentDetails", appointmentDetails);
             } else {
                 jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Appointment not found");
+                jsonResponse.addProperty("message", "Appointment not found (ID: " + appointmentId + ")");
             }
         } catch (Exception e) {
             jsonResponse.addProperty("success", false);
