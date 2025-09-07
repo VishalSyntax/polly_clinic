@@ -252,11 +252,19 @@
         <url-pattern>/checkPatientStatus</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>GetPatientHistoryServlet</servlet-name>
+        <servlet-class>GetPatientHistoryServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>GetPatientHistoryServlet</servlet-name>
         <url-pattern>/getPatientHistory</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>ModifyAppointmentServlet</servlet-name>
+        <servlet-class>ModifyAppointmentServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ModifyAppointmentServlet</servlet-name>
         <url-pattern>/modifyAppointment</url-pattern>
