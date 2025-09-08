@@ -29,7 +29,7 @@
                     <div class="row g-3 align-items-end">
                         <div class="col-md-8">
                             <label for="searchInput" class="form-label">Search:</label>
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search by Patient ID, Contact Number, or Email">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search by Patient ID, Contact Number, or Patient Name">
                         </div>
                         <div class="col-md-4">
                             <button class="btn btn-primary me-2" onclick="searchAppointments()">Search</button>
@@ -54,7 +54,7 @@
                                 </tr>
                             </thead>
                             <tbody id="completedAppointmentsBody">
-                                <!-- Completed appointments loaded via JDBC -->
+                                <!-- above this appointments tabl loaded by JDBC -->
                             </tbody>
                         </table>
                     </div>
