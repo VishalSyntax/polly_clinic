@@ -194,6 +194,42 @@
     </servlet-mapping>
     
     <servlet>
+        <servlet-name>GetReceptionistStatsServlet</servlet-name>
+        <servlet-class>GetReceptionistStatsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetReceptionistStatsServlet</servlet-name>
+        <url-pattern>/getReceptionistStats</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetCancelledAppointmentsServlet</servlet-name>
+        <servlet-class>GetCancelledAppointmentsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetCancelledAppointmentsServlet</servlet-name>
+        <url-pattern>/getCancelledAppointments</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CancelAppointmentWithRemarkServlet</servlet-name>
+        <servlet-class>CancelAppointmentWithRemarkServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CancelAppointmentWithRemarkServlet</servlet-name>
+        <url-pattern>/cancelAppointmentWithRemark</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetCancellationRemarksServlet</servlet-name>
+        <servlet-class>GetCancellationRemarksServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetCancellationRemarksServlet</servlet-name>
+        <url-pattern>/getCancellationRemarks</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
         <servlet-name>GetAllAppointmentsServlet</servlet-name>
         <servlet-class>GetAllAppointmentsServlet</servlet-class>
     </servlet>
