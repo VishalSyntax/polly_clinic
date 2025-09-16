@@ -1,9 +1,9 @@
-<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
+\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generate Prescription - AppointCare</title>
+    <title>Generate Prescription - PollyClinic</title>
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/prescription-form.css">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
@@ -74,5 +74,13 @@
     <script src="js/prescription-form.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
