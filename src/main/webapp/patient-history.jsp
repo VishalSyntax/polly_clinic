@@ -1,4 +1,4 @@
-<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
+\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -94,5 +94,13 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
