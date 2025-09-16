@@ -1,8 +1,3 @@
-<%
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +25,7 @@
             <div class="doctor-info" id="doctorInfo" style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                 
             </div>
-            <h1>📅 Today's Appointments - Dr. ${user}</h1>
+            <h1>Today's Appointments</h1>
             
             <div class="appointments-table">
                 <table>
@@ -74,10 +69,20 @@
 
     <script>
         // Prevent back button access after logout
-        if (!${user != null ? 'true' : 'false'}) {
+        window.addEventListener('load', function() {
+            if (performance.navigation.type === 2) {
+                window.location.replace('index.jsp');
+            }
+        });
+        
+        // Clear history on logout
+        document.querySelector('.logout').addEventListener('click', function(e) {
+            e.preventDefault();
             window.location.replace('index.jsp');
-        }
+        });
     </script>
     <script src="js/doctor-appointments.js"></script>
 </body>
 </html>
+
+
