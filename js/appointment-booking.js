@@ -1,5 +1,28 @@
-// Initialize EmailJS
-emailjs.init("DaTM_GydmK934LWAm");
+// Green API WhatsApp Config t0 25
+const GREEN_API_URL = 'https://api.green-api.com';
+const INSTANCE_ID = '7105319809';
+const ACCESS_TOKEN = 'f557539d8a6e4ee0acd5144309849c63a12e5c5094564d73b7';
+
+// Format phone number to international format
+function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return null;
+    
+    // Remove all non-digit characters
+    let cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // If number starts with 91, use as is
+    if (cleaned.startsWith('91') && cleaned.length === 12) {
+        return cleaned;
+    }
+    
+    // If 10 digit number, add 91 prefix
+    if (cleaned.length === 10) {
+        return '91' + cleaned;
+    }
+    
+    // Return original if already in correct format or unknown format
+    return cleaned;
+}
 
 let selectedTimeSlot = null;
 
@@ -147,10 +170,15 @@ document.getElementById('appointmentForm').addEventListener('submit', async func
         const result = await response.json();
         
         if (result.success) {
-            // Send confirmation email
-            await sendConfirmationEmail(formData, result.patientId);
+            // Send WhatsApp confirmation
+            await sendWhatsAppConfirmation(formData, result.patientId);
             alert(`Appointment booked successfully! Patient ID: ${result.patientId}`);
             this.reset();
+            
+            // Restore current date after reset
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').value = today;
+            
             selectedTimeSlot = null;
             document.querySelectorAll('.time-slot').forEach(slot => {
                 slot.classList.remove('selected');
@@ -164,27 +192,44 @@ document.getElementById('appointmentForm').addEventListener('submit', async func
     }
 });
 
-async function sendConfirmationEmail(appointmentData, patientId) {
-    // Only send email if email address is provided
-    if (!appointmentData.email || appointmentData.email.trim() === '') {
-        console.log('No email provided, skipping email notification');
+async function sendWhatsAppConfirmation(appointmentData, patientId) {
+    // Only send WhatsApp if contact number is provided
+    if (!appointmentData.contactNumber || appointmentData.contactNumber.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
         return;
     }
     
-    const templateParams = {
-        to_email: appointmentData.email,
-        patient_name: appointmentData.patientName,
-        patient_id: patientId,
-        appointment_date: appointmentData.appointmentDate,
-        appointment_time: appointmentData.appointmentTime,
-        doctor_name: document.getElementById('doctor').selectedOptions[0].text
-    };
+    const doctorName = document.getElementById('doctor').selectedOptions[0].text;
+    const message = `🏥 *PollyClinic Appointment Confirmation*\n\n` +
+                   `Dear ${appointmentData.patientName},\n\n` +
+                   `Your appointment has been confirmed!\n\n` +
+                   `📋 *Details:*\n` +
+                   `Patient ID: ${patientId}\n` +
+                   `Date: ${appointmentData.appointmentDate}\n` +
+                   `Time: ${appointmentData.appointmentTime}\n` +
+                   `Doctor: ${doctorName}\n\n` +
+                   `Please arrive 15 minutes early.\n\n` +
+                   `Thank you for choosing PollyClinic! 🙏`;
     
     try {
-        await emailjs.send('service_vf4qmrt', 'appointment_confirmation', templateParams);
-        console.log('Confirmation email sent');
+        const response = await fetch(`${GREEN_API_URL}/waInstance${INSTANCE_ID}/sendMessage/${ACCESS_TOKEN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chatId: `${formatPhoneNumber(appointmentData.contactNumber)}@c.us`,
+                message: message
+            })
+        });
+        
+        if (response.ok) {
+            console.log('WhatsApp confirmation sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
+        }
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Error sending WhatsApp message:', error);
     }
 }
 
