@@ -1,9 +1,9 @@
-<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
+\r\n\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Time Slots - AppointCare</title>
+    <title>Manage Time Slots - PollyClinic</title>
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/common-sidebar.css">
     <link rel="stylesheet" href="css/manage-timeslots.css">
@@ -49,5 +49,14 @@
     <script src="js/manage-timeslots.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
