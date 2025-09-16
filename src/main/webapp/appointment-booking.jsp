@@ -1,8 +1,3 @@
-<%
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,12 +76,16 @@
       </div>
     </div>
     
-    <script>
-        // Prevent back button access after logout
-        if (!${user != null ? 'true' : 'false'}) {
-            window.location.replace('index.jsp');
-        }
-    </script>
-    <script src="js/appointment-booking.js"></script>
-</body>
+<script src="js/appointment-booking.js"></script>
+    <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
+
+
+
+
+
+
+
+
+
