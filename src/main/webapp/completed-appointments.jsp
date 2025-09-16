@@ -1,4 +1,4 @@
-<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
+\r\n\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
 
     <div class="main-content">
         <div class="login-container" style="width: 80%; max-width: none;">
-            <h1>📋 Completed Appointments</h1>
+            <h1>Completed Appointments</h1>
             
             <div class="card mb-4">
                 <div class="card-body">
@@ -80,7 +80,18 @@
 
     <script src="js/bootstrap.bundle.min_2.js"></script>
     <script src="js/completed-appointments.js"></script>
-</body>
+    <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 
 
