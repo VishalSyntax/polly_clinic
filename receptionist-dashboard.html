@@ -3,40 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receptionist Dashboard - AppointCare</title>
+    <title>Receptionist Dashboard - PollyClinic</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/common-sidebar.css">
-    <link rel="stylesheet" href="css/receptionist-dashboard.css">
+    <link rel="stylesheet" href="css/bootstrap-sidebar-override.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
     <div class="sidebar">
-      <div class="logo">
-        <img src="img/logo.webp" alt="Hospital Logo">
-      </div>
-      <a href="receptionist-dashboard.html" class="active">Dashboard</a>
-      <a href="appointment-booking.html">Book Appointment</a>
-      <a href="view-appointments.html">View Appointments</a>
-      <a href="patient_search.html">Patient Search</a>
-      <a href="index.html" class="logout">Logout</a>
+        <div class="logo">
+            <img src="img/logo.webp" alt="Hospital Logo">
+        </div>
+        <a href="receptionist-dashboard.html" class="active">Dashboard</a>
+        <a href="appointment-booking.html">Book Appointment</a>
+        <a href="view-appointments.html">View Appointments</a>
+        <a href="patient_search.html">Patient Search</a>
+        <a href="index.html" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
-      <div class="login-container dashboard-container" style="width: 60%; max-width: none;">
-        <div class="user-info user-info-box" id="userInfo">
+        <div class="container-fluid">
             
+            <div class="card user-info-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-circle me-3 text-primary" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-1">Welcome Back!</h5>
+                            <p class="mb-0 text-muted" id="userInfo">Loading user information...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="mb-4">Receptionist Dashboard</h2>
+            
+            
+            <div class="row g-4">
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-calendar-check card-icon text-primary"></i>
+                            <div class="card-number text-primary" id="totalAppointments">0</div>
+                            <h6 class="card-title">Total Appointments</h6>
+                            <small class="text-muted">Today's scheduled appointments</small>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='appointment-booking.html'">
+                        <div class="card-body text-center">
+                            <i class="bi bi-plus-circle card-icon text-success"></i>
+                            <h6 class="card-title mt-2">Book New Appointment</h6>
+                            <small class="text-muted">Schedule a new patient appointment</small>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='view-appointments.html'">
+                        <div class="card-body text-center">
+                            <i class="bi bi-list-ul card-icon text-info"></i>
+                            <h6 class="card-title mt-2">View Appointments</h6>
+                            <small class="text-muted">Manage existing appointments</small>
+                        </div>
+                    </div>
+                </div>
+
+              
+                <div class="col-xl-3 col-md-6">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='patient_search.html'">
+                        <div class="card-body text-center">
+                            <i class="bi bi-search card-icon text-warning"></i>
+                            <h6 class="card-title mt-2">Search Patient</h6>
+                            <small class="text-muted">Book new App for existing patients</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick overview -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">
+                                <i class="bi bi-graph-up me-2"></i>Quick Overview
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="border-end">
+                                        <h4 class="text-primary" id="scheduledCount">0</h4>
+                                        <small class="text-muted">Total Scheduled</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border-end">
+                                        <h4 class="text-danger" id="cancelledCount">0</h4>
+                                        <small class="text-muted">Total Cancelled</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border-end">
+                                        <h4 class="text-success" id="completedCount">0</h4>
+                                        <small class="text-muted">Completed Today</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <h4 class="text-info" id="totalPatients">0</h4>
+                                    <small class="text-muted">Total Patients</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h1>Receptionist Dashboard</h1>
-        <div class="form-group">
-            <button class="login-btn" onclick="window.location.href='appointment-booking.html'">Book New Appointment</button>
-        </div>
-        <div class="form-group">
-            <button class="login-btn" onclick="window.location.href='view-appointments.html'">View Appointments</button>
-        </div>
-        <div class="form-group">
-            <button class="login-btn" onclick="window.location.href='patient_search.html'">Search Patient</button>
-        </div>
-      </div>
     </div>
+
+    <script src="js/bootstrap.bundle.min_2.js"></script>
     <script src="js/receptionist-dashboard.js"></script>
 </body>
 </html>
