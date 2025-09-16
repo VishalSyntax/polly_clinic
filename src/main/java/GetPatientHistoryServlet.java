@@ -29,7 +29,7 @@ public class GetPatientHistoryServlet extends HttpServlet {
             String sql = "SELECT a.id, a.appointment_date, a.appointment_time, a.status, " +
                         "d.name as doctor_name, pr.remarks " +
                         "FROM appointments a " +
-                        "JOIN doctors d ON a.doctor_id = d.user_id " +
+                        "JOIN doctors d ON a.doctor_id = d.id " +
                         "LEFT JOIN patient_remarks pr ON a.id = pr.appointment_id " +
                         "WHERE a.patient_id = ? " +
                         "ORDER BY a.appointment_date DESC, a.appointment_time DESC";

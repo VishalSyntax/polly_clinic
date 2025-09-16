@@ -24,7 +24,7 @@ public class GetCompletedAppointmentsServlet extends HttpServlet {
                         "p.contact_number, d.name as doctor_name " +
                         "FROM appointments a " +
                         "JOIN patients p ON a.patient_id = p.patient_id " +
-                        "JOIN doctors d ON a.doctor_id = d.user_id " +
+                        "JOIN doctors d ON a.doctor_id = d.id " +
                         "WHERE a.status = 'completed'";
             
             // Add doctor filter if doctorId is provided

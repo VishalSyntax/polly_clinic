@@ -1,4 +1,5 @@
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +11,8 @@ import java.sql.ResultSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class GetPatientRemarksServlet extends HttpServlet {
+@WebServlet("/getCancellationRemarks")
+public class GetCancellationRemarksServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         response.setContentType("application/json");
@@ -20,11 +22,12 @@ public class GetPatientRemarksServlet extends HttpServlet {
         JsonArray remarksArray = new JsonArray();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT pr.remarks, pr.created_at, d.name as doctor_name " +
-                        "FROM patient_remarks pr " +
-                        "JOIN doctors d ON pr.doctor_id = d.id " +
-                        "WHERE pr.patient_id = ? " +
-                        "ORDER BY pr.created_at DESC";
+            String sql = "SELECT cr.cancellation_reason, cr.cancelled_by, cr.created_at, " +
+                        "a.appointment_date, a.appointment_time " +
+                        "FROM cancellation_remarks cr " +
+                        "JOIN appointments a ON cr.appointment_id = a.id " +
+                        "WHERE cr.patient_id = ? " +
+                        "ORDER BY cr.created_at DESC";
             
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, patientId);
@@ -32,9 +35,11 @@ public class GetPatientRemarksServlet extends HttpServlet {
             
             while (rs.next()) {
                 JsonObject remark = new JsonObject();
-                remark.addProperty("remarks", rs.getString("remarks"));
-                remark.addProperty("date", rs.getString("created_at"));
-                remark.addProperty("doctorName", rs.getString("doctor_name"));
+                remark.addProperty("reason", rs.getString("cancellation_reason"));
+                remark.addProperty("cancelledBy", rs.getString("cancelled_by"));
+                remark.addProperty("cancelledAt", rs.getTimestamp("created_at").toString());
+                remark.addProperty("appointmentDate", rs.getString("appointment_date"));
+                remark.addProperty("appointmentTime", rs.getString("appointment_time"));
                 remarksArray.add(remark);
             }
         } catch (Exception e) {

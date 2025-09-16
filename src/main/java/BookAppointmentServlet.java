@@ -53,14 +53,32 @@ public class BookAppointmentServlet extends HttpServlet {
                 patientStmt.executeUpdate();
             }
             
-            // Insert appointment
-            String appointmentSql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, 'scheduled')";
-            PreparedStatement appointmentStmt = conn.prepareStatement(appointmentSql);
-            appointmentStmt.setString(1, patientId);
-            appointmentStmt.setInt(2, requestData.get("doctorId").getAsInt());
-            appointmentStmt.setString(3, requestData.get("appointmentDate").getAsString());
-            appointmentStmt.setString(4, requestData.get("appointmentTime").getAsString());
-            appointmentStmt.executeUpdate();
+            // Check if patient has existing completed appointment
+            String checkSql = "SELECT id FROM appointments WHERE patient_id = ? AND status = 'completed' ORDER BY appointment_date DESC LIMIT 1";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setString(1, patientId);
+            ResultSet rs = checkStmt.executeQuery();
+            
+            if (rs.next()) {
+                // Update existing completed appointment
+                int appointmentId = rs.getInt("id");
+                String updateSql = "UPDATE appointments SET doctor_id = ?, appointment_date = ?, appointment_time = ?, status = 'scheduled' WHERE id = ?";
+                PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+                updateStmt.setInt(1, requestData.get("doctorId").getAsInt());
+                updateStmt.setString(2, requestData.get("appointmentDate").getAsString());
+                updateStmt.setString(3, requestData.get("appointmentTime").getAsString());
+                updateStmt.setInt(4, appointmentId);
+                updateStmt.executeUpdate();
+            } else {
+                // Insert new appointment if no completed appointment exists
+                String appointmentSql = "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, status) VALUES (?, ?, ?, ?, 'scheduled')";
+                PreparedStatement appointmentStmt = conn.prepareStatement(appointmentSql);
+                appointmentStmt.setString(1, patientId);
+                appointmentStmt.setInt(2, requestData.get("doctorId").getAsInt());
+                appointmentStmt.setString(3, requestData.get("appointmentDate").getAsString());
+                appointmentStmt.setString(4, requestData.get("appointmentTime").getAsString());
+                appointmentStmt.executeUpdate();
+            }
             
             conn.commit();
             

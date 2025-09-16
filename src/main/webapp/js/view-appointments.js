@@ -1,4 +1,28 @@
-emailjs.init("DaTM_GydmK934LWAm");
+// Green API WhatsApp config to 25
+const GREEN_API_URL = 'https://api.green-api.com';
+const INSTANCE_ID = '7105319809';
+const ACCESS_TOKEN = 'f557539d8a6e4ee0acd5144309849c63a12e5c5094564d73b7';
+
+// Format phone number to international format
+function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return null;
+    
+    // Remove all non-digit characters
+    let cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // If number starts with 91, use as is
+    if (cleaned.startsWith('91') && cleaned.length === 12) {
+        return cleaned;
+    }
+    
+    // If 10 digit number, add 91 prefix
+    if (cleaned.length === 10) {
+        return '91' + cleaned;
+    }
+    
+    // Return original if already in correct format
+    return cleaned;
+}
 
 let allAppointments = [];
 
@@ -14,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modifyForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        const newDoctor = document.getElementById('modifyDoctor').value;
         const newDate = document.getElementById('modifyDate').value;
         const newTime = document.getElementById('modifyTime').value;
         
@@ -25,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     appointmentId: currentAppointmentId,
+                    newDoctorId: parseInt(newDoctor),
                     newDate: newDate,
                     newTime: newTime
                 })
@@ -33,6 +59,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (result.success) {
+                // Send WhatsApp modification notification
+                if (currentAppointment && currentAppointment.contactNumber) {
+                    const doctorSelect = document.getElementById('modifyDoctor');
+                    const doctorName = doctorSelect.selectedOptions[0].text;
+                    
+                    await sendModificationWhatsApp(currentAppointment.contactNumber, {
+                        patientName: currentAppointment.patientName,
+                        newDate: newDate,
+                        newTime: newTime,
+                        newDoctorName: doctorName
+                    });
+                }
+                
                 alert('Appointment updated successfully');
                 closeModifyModal();
                 loadAppointments();
@@ -61,25 +100,24 @@ async function loadAppointments() {
     }
 }
 
-function filterAppointments() {
+async function filterAppointments() {
     const filterValue = document.querySelector('input[name="appointmentFilter"]:checked').value;
     const today = new Date().toISOString().split('T')[0];
     
-    console.log('Filter value:', filterValue);
-    console.log('Today:', today);
-    console.log('All appointments:', allAppointments);
+    if (filterValue === 'cancelled') {
+        await loadCancelledAppointments();
+        return;
+    }
     
     let filteredAppointments;
     if (filterValue === 'today') {
         filteredAppointments = allAppointments.filter(appointment => {
-            console.log('Comparing:', appointment.date, 'with', today);
-            return appointment.date === today;
+            return appointment.date === today && appointment.status !== 'cancelled';
         });
     } else {
-        filteredAppointments = allAppointments;
+        filteredAppointments = allAppointments.filter(appointment => appointment.status !== 'cancelled');
     }
     
-    console.log('Filtered appointments:', filteredAppointments);
     displayAppointments(filteredAppointments);
 }
 
@@ -87,18 +125,36 @@ function displayAppointments(appointments) {
     const tbody = document.getElementById('appointmentsTableBody');
     tbody.innerHTML = '';
     
+    const filterValue = document.querySelector('input[name="appointmentFilter"]:checked').value;
+    
     appointments.forEach(appointment => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${appointment.date}</td>
-            <td>${appointment.patientId}</td>
-            <td>${appointment.patientName}</td>
-            <td>
-                <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
-                <button class="btn btn-danger btn-sm me-1" onclick="cancelAppointment(${appointment.id}, '${appointment.email}')">Cancel</button>
-                <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
-            </td>
-        `;
+        
+        if (filterValue === 'cancelled') {
+            row.innerHTML = `
+                <td>${appointment.date}</td>
+                <td>${appointment.patientId}</td>
+                <td>${appointment.patientName}</td>
+                <td>${appointment.contactNumber}</td>
+                <td>${appointment.doctorName}</td>
+                <td>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="viewCancelRemarks('${appointment.patientId}')">View Cancel History</button>
+                </td>
+            `;
+        } else {
+            row.innerHTML = `
+                <td>${appointment.date}</td>
+                <td>${appointment.patientId}</td>
+                <td>${appointment.patientName}</td>
+                <td>${appointment.contactNumber || 'N/A'}</td>
+                <td>${appointment.doctorName || 'N/A'}</td>
+                <td>
+                    <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
+                    <button class="btn btn-danger btn-sm me-1" onclick="showCancelModal(${appointment.id}, '${appointment.patientId}')">Cancel</button>
+                    <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
+                </td>
+            `;
+        }
         tbody.appendChild(row);
     });
 }
@@ -138,75 +194,247 @@ async function viewHistory(patientId) {
     }
 }
 
-async function cancelAppointment(appointmentId, email) {
-    if (!confirm('Are you sure you want to cancel this appointment?')) return;
+let currentCancelAppointmentId = null;
+let currentCancelPatientId = null;
+
+function showCancelModal(appointmentId, patientId) {
+    currentCancelAppointmentId = appointmentId;
+    currentCancelPatientId = patientId;
+    
+    document.getElementById('cancelRemark').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+    modal.show();
+}
+
+async function confirmCancellation() {
+    const cancelReason = document.getElementById('cancelRemark').value.trim();
+    
+    if (!cancelReason) {
+        alert('Please enter a cancellation reason');
+        return;
+    }
     
     try {
-        console.log('Cancelling appointment ID:', appointmentId);
-        const response = await fetch('cancelAppointment', {
+        const response = await fetch('cancelAppointmentWithRemark', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ appointmentId: parseInt(appointmentId) })
+            body: JSON.stringify({
+                appointmentId: currentCancelAppointmentId,
+                patientId: currentCancelPatientId,
+                cancelReason: cancelReason,
+                cancelledBy: localStorage.getItem('userName') || 'Receptionist'
+            })
         });
         
-        console.log('Response status:', response.status);
         const result = await response.json();
-        console.log('Response result:', result);
         
         if (result.success) {
-            await sendCancellationEmail(email, result.appointmentDetails);
+            // Send WhatsApp cancellation notification
+            const appointment = allAppointments.find(apt => apt.id == currentCancelAppointmentId);
+            if (appointment && appointment.contactNumber) {
+                await sendCancellationWhatsApp(appointment.contactNumber, {
+                    patientName: appointment.patientName,
+                    date: appointment.date,
+                    time: appointment.time,
+                    doctorName: appointment.doctorName
+                });
+            }
+            
             alert('Appointment cancelled successfully');
+            // Remove focus before closing modal
+            document.activeElement.blur();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+            modal.hide();
             loadAppointments();
         } else {
-            alert('Failed to cancel appointment: ' + (result.message || 'Unknown error'));
+            alert('Failed to cancel appointment: ' + result.message);
         }
     } catch (error) {
         console.error('Error cancelling appointment:', error);
-        alert('Error cancelling appointment: ' + error.message);
+        alert('Error cancelling appointment');
     }
 }
 
-async function sendCancellationEmail(email, appointmentDetails) {
-    const templateParams = {
-        to_email: email,
-        patient_name: appointmentDetails.patientName,
-        appointment_date: appointmentDetails.date,
-        appointment_time: appointmentDetails.time,
-        doctor_name: appointmentDetails.doctorName
-    };
+async function loadCancelledAppointments() {
+    try {
+        const response = await fetch('getCancelledAppointments');
+        const cancelledAppointments = await response.json();
+        displayAppointments(cancelledAppointments);
+    } catch (error) {
+        console.error('Error loading cancelled appointments:', error);
+    }
+}
+
+async function viewCancelRemarks(patientId) {
+    try {
+        const response = await fetch(`getCancellationRemarks?patientId=${patientId}`);
+        const remarks = await response.json();
+        
+        const content = document.getElementById('cancelRemarksContent');
+        
+        if (remarks.length === 0) {
+            content.innerHTML = '<p>No cancellation history found for this patient.</p>';
+        } else {
+            content.innerHTML = '<h5>Cancellation History:</h5>';
+            remarks.forEach(remark => {
+                content.innerHTML += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <p><strong>Appointment:</strong> ${remark.appointmentDate} at ${remark.appointmentTime}</p>
+                            <p><strong>Cancelled By:</strong> ${remark.cancelledBy}</p>
+                            <p><strong>Cancelled At:</strong> ${new Date(remark.cancelledAt).toLocaleString()}</p>
+                            <p><strong>Reason:</strong> ${remark.reason}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById('cancelRemarksModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Error loading cancellation remarks:', error);
+        alert('Error loading cancellation history');
+    }
+}
+
+async function sendCancellationWhatsApp(contactNumber, appointmentDetails) {
+    if (!contactNumber || contactNumber.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
+        return;
+    }
+    
+    const message = `🚫 *PollyClinic Appointment Cancelled*\n\n` +
+                   `Dear ${appointmentDetails.patientName},\n\n` +
+                   `Your appointment has been cancelled.\n\n` +
+                   `📋 *Cancelled Appointment:*\n` +
+                   `Date: ${appointmentDetails.date}\n` +
+                   `Time: ${appointmentDetails.time}\n` +
+                   `Doctor: ${appointmentDetails.doctorName}\n\n` +
+                   `Please contact on 9975750931 to reschedule.\n\n` +
+                   `PollyClinic Team 🙏`;
     
     try {
-        await emailjs.send('service_vf4qmrt', 'appointment_cancellation', templateParams);
+        const response = await fetch(`${GREEN_API_URL}/waInstance${INSTANCE_ID}/sendMessage/${ACCESS_TOKEN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chatId: `${formatPhoneNumber(contactNumber)}@c.us`,
+                message: message
+            })
+        });
+        
+        if (response.ok) {
+            console.log('WhatsApp cancellation notification sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
+        }
     } catch (error) {
-        console.error('Error sending cancellation email:', error);
+        console.error('Error sending WhatsApp message:', error);
     }
 }
 
 let currentAppointmentId = null;
+let currentAppointment = null;
 
-function modifyAppointment(appointmentId) {
+async function modifyAppointment(appointmentId) {
     currentAppointmentId = appointmentId;
     
-    // Set minimum date to today
+    // Find current appointment details
+    currentAppointment = allAppointments.find(apt => apt.id == appointmentId);
+    
+    // Load doctors
+    await loadDoctorsForModify();
+    
+    // Set default values
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('modifyDate').min = today;
+    document.getElementById('modifyDate').value = today; // Set current date as default
+    
+    // Set current doctor as selected if available
+    if (currentAppointment && currentAppointment.doctorId) {
+        document.getElementById('modifyDoctor').value = currentAppointment.doctorId;
+    }
     
     const modal = new bootstrap.Modal(document.getElementById('modifyModal'));
     modal.show();
 }
 
+async function loadDoctorsForModify() {
+    try {
+        const response = await fetch('getDoctors');
+        if (response.ok) {
+            const doctors = await response.json();
+            const doctorSelect = document.getElementById('modifyDoctor');
+            doctorSelect.innerHTML = '<option value="">Choose Doctor</option>';
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.name} - ${doctor.specialization}`;
+                doctorSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading doctors:', error);
+    }
+}
+
 function closeHistoryModal() {
+    // Remove focus before closing modal
+    document.activeElement.blur();
     const modal = bootstrap.Modal.getInstance(document.getElementById('historyModal'));
     if (modal) modal.hide();
 }
 
 function closeModifyModal() {
+    // Remove focus before closing modal
+    document.activeElement.blur();
     const modal = bootstrap.Modal.getInstance(document.getElementById('modifyModal'));
     if (modal) modal.hide();
     document.getElementById('modifyForm').reset();
     currentAppointmentId = null;
+}
+
+async function sendModificationWhatsApp(contactNumber, appointmentDetails) {
+    if (!contactNumber || contactNumber.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
+        return;
+    }
+    
+    const message = `✏️ *PollyClinic Appointment Modified*\n\n` +
+                   `Dear ${appointmentDetails.patientName},\n\n` +
+                   `Your appointment updated with new details.\n\n` +
+                   `📋 *New Appointment Details:*\n` +
+                   `Date: ${appointmentDetails.newDate}\n` +
+                   `Time: ${appointmentDetails.newTime}\n` +
+                   `Doctor: ${appointmentDetails.newDoctorName}\n\n` +
+                   `Please arrive 15 minutes early.\n\n` +
+                   `Thank you for choosing PollyClinic! 🙏`;
+    
+    try {
+        const response = await fetch(`${GREEN_API_URL}/waInstance${INSTANCE_ID}/sendMessage/${ACCESS_TOKEN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chatId: `${formatPhoneNumber(contactNumber)}@c.us`,
+                message: message
+            })
+        });
+        
+        if (response.ok) {
+            console.log('WhatsApp modification notification sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
+        }
+    } catch (error) {
+        console.error('Error sending WhatsApp message:', error);
+    }
 }
 
 function updateAppointment() {

@@ -3,12 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AppointCare - Patient Search</title>
+    <title>PollyClinic - Patient Search</title>
     
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/appointments-table.css">
     <link rel="stylesheet" href="css/bootstrap-sidebar-override.css">
+    
+    <style>
+        .time-slots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .time-slot {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: all 0.2s;
+        }
+        
+        .time-slot:hover {
+            background-color: #e9ecef;
+        }
+        
+        .time-slot.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .time-slot.unavailable {
+            background-color: #dc3545;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .time-slot.unavailable:hover {
+            background-color: #dc3545;
+        }
+    </style>
     
 </head>
 <body>
@@ -33,13 +72,13 @@
                     <select id="searchType" class="form-control">
                         <option value="id">Patient ID</option>
                         <option value="contact">Contact Number</option>
-                        <option value="email">Email</option>
+                        <option value="name">Patient Name</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="searchTerm">Search Term:</label>
-                    <input type="text" id="searchTerm" class="form-control" placeholder="Enter Patient ID, Contact Number, or Email" required>
+                    <input type="text" id="searchTerm" class="form-control" placeholder="Enter Patient ID, Contact Number, or Name" required>
                 </div>
                 
                 <button type="submit" class="login-btn">Search Patients</button>
@@ -79,7 +118,7 @@
                         <div class="mb-3">
                             <label class="form-label">Select Time Slot:</label>
                             <div class="time-slots" id="modalTimeSlots">
-                                <!-- Time slots will be loaded dynamically -->
+                                
                             </div>
                             <input type="hidden" id="modalSelectedTime" required>
                         </div>

@@ -1,3 +1,28 @@
+// Green API WhatsApp Config
+const GREEN_API_URL = 'https://api.green-api.com';
+const INSTANCE_ID = '7105319809';
+const ACCESS_TOKEN = 'f557539d8a6e4ee0acd5144309849c63a12e5c5094564d73b7';
+
+// Format phone number to international format
+function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return null;
+    
+    // Remove all non-digit characters
+    let cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // If number starts with 91, use as is
+    if (cleaned.startsWith('91') && cleaned.length === 12) {
+        return cleaned;
+    }
+    
+    // If 10 digit number, add 91 prefix
+    if (cleaned.length === 10) {
+        return '91' + cleaned;
+    }
+    
+    // Return original if already in correct format or unknown format
+    return cleaned;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchForm').addEventListener('submit', searchPatients);
@@ -106,11 +131,23 @@ function displayResults(patients) {
     }
 }
 
-let currentPatientId, currentPatientName;
+let currentPatientId, currentPatientName, currentPatientContact;
 
 async function bookAppointment(patientId, patientName) {
     currentPatientId = patientId;
     currentPatientName = patientName;
+    
+    // Find patient contact from search results
+    const searchResults = document.querySelectorAll('#patientList .card');
+    searchResults.forEach(card => {
+        const patientIdCell = card.querySelector('tbody tr:first-child td:last-child');
+        if (patientIdCell && patientIdCell.textContent === patientId) {
+            const contactCell = card.querySelector('tbody tr:nth-child(3) td:last-child');
+            if (contactCell) {
+                currentPatientContact = contactCell.textContent;
+            }
+        }
+    });
     
     try {
         const response = await fetch(`checkPatientStatus?patientId=${encodeURIComponent(patientId)}`);
@@ -121,14 +158,15 @@ async function bookAppointment(patientId, patientName) {
         }
         
         const statusData = await response.json();
+        console.log('Patient status check result:', statusData);
         
         if (statusData.error) {
-            alert('Database error occurred');
+            alert('Database error occurred: ' + statusData.error);
             return;
         }
         
-        // Check if last appointment status is scheduled
-        if (statusData.lastAppointmentStatus === 'scheduled') {
+        // Check if patient has scheduled appointment
+        if (statusData.hasScheduledAppointment === true) {
             alert(`Appointment is already booked with ${statusData.doctorName}`);
             return;
         }
@@ -183,10 +221,12 @@ async function showBookingModal(patientName) {
     // Remove existing listeners
     dateInput.removeEventListener('change', checkTimeSlotAvailability);
     doctorSelect.removeEventListener('change', checkTimeSlotAvailability);
+    doctorSelect.removeEventListener('change', checkDoctorConflict);
     
     // Add new listeners
     dateInput.addEventListener('change', checkTimeSlotAvailability);
     doctorSelect.addEventListener('change', checkTimeSlotAvailability);
+    doctorSelect.addEventListener('change', checkDoctorConflict);
 }
 
 async function loadTimeSlots() {
@@ -317,6 +357,8 @@ async function submitQuickBooking() {
         const result = await response.json();
         
         if (result.success) {
+            // Send WhatsApp confirmation
+            await sendWhatsAppConfirmation();
             alert('Appointment booked successfully!');
             const modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
             modal.hide();
@@ -326,6 +368,43 @@ async function submitQuickBooking() {
     } catch (error) {
         console.error('Error booking appointment:', error);
         alert('Error booking appointment');
+    }
+}
+
+async function checkDoctorConflict() {
+    const doctorId = document.getElementById('modalDoctor').value;
+    
+    if (!doctorId) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`checkPatientStatus?patientId=${encodeURIComponent(currentPatientId)}`);
+        
+        if (!response.ok) {
+            return;
+        }
+        
+        const statusData = await response.json();
+        console.log('Doctor conflict check result:', statusData);
+        
+        if (statusData.error) {
+            return;
+        }
+        
+        // Check if patient has scheduled appointment
+        if (statusData.hasScheduledAppointment === true) {
+            alert(`Appointment is already booked with ${statusData.doctorName}`);
+            // Reset doctor selection
+            document.getElementById('modalDoctor').value = '';
+            // Clear time slots
+            document.getElementById('modalTimeSlots').innerHTML = '';
+            document.getElementById('modalSelectedTime').value = '';
+            return;
+        }
+        
+    } catch (error) {
+        console.error('Error checking doctor conflict:', error);
     }
 }
 
@@ -367,5 +446,49 @@ async function checkTimeSlotAvailability() {
         });
     } catch (error) {
         console.error('Error checking availability:', error);
+    }
+}
+
+async function sendWhatsAppConfirmation() {
+    try {
+        if (!currentPatientContact || currentPatientContact.trim() === '') {
+            console.log('No contact number found, skipping WhatsApp notification');
+            return;
+        }
+        
+        const doctorSelect = document.getElementById('modalDoctor');
+        const doctorName = doctorSelect.selectedOptions[0].text;
+        const appointmentDate = document.getElementById('modalDate').value;
+        const appointmentTime = document.getElementById('modalSelectedTime').value;
+        
+        const message = `🏥 *PollyClinic Appointment Confirmation*\n\n` +
+                       `Dear ${currentPatientName},\n\n` +
+                       `your appointment has been confirmed\n\n` +
+                       `📋 *Details:*\n` +
+                       `Patient ID: ${currentPatientId}\n` +
+                       `Date: ${appointmentDate}\n` +
+                       `Time: ${appointmentTime}\n` +
+                       `Doctor: ${doctorName}\n\n` +
+                       `Please arrive 15 minutes early.\n\n` +
+                       `Thank you for choosing PollyClinic 🙏`;
+        
+        const whatsappResponse = await fetch(`${GREEN_API_URL}/waInstance${INSTANCE_ID}/sendMessage/${ACCESS_TOKEN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chatId: `${formatPhoneNumber(currentPatientContact)}@c.us`,
+                message: message
+            })
+        });
+        
+        if (whatsappResponse.ok) {
+            console.log('WhatsApp confirmation sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
+        }
+    } catch (error) {
+        console.error('Error sending WhatsApp message:', error);
     }
 }

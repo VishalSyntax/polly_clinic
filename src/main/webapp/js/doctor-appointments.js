@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDateTime, 1000);
     displayDoctorInfo();
     loadTodayAppointments();
+    
+    // Auto-refresh appointments every 30 seconds
+    setInterval(loadTodayAppointments, 30000);
 });
 
 // Display doctor info
@@ -42,8 +45,8 @@ function updateDateTime() {
 // Load today's appointments
 async function loadTodayAppointments() {
     try {
-        const doctorId = localStorage.getItem('userId') || 2;
-        console.log('Loading appointments for doctor ID:', doctorId);
+        const doctorId = localStorage.getItem('doctorId') || 1;
+        // console.log('Loading appointments for doctor ID:', doctorId); // Reduced logging for auto-refresh
         
         const response = await fetch(`getTodayAppointments?doctorId=${doctorId}`);
         const appointments = await response.json();
@@ -148,7 +151,7 @@ async function saveRemark() {
                 appointmentId: currentAppointmentId,
                 patientId: currentPatientId,
                 remarks: newRemark,
-                doctorId: parseInt(localStorage.getItem('userId')) || 2
+                doctorId: parseInt(localStorage.getItem('doctorId')) || 1
             })
         });
 

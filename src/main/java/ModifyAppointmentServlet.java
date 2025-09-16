@@ -29,15 +29,17 @@ public class ModifyAppointmentServlet extends HttpServlet {
             
             JsonObject jsonRequest = JsonParser.parseString(sb.toString()).getAsJsonObject();
             int appointmentId = jsonRequest.get("appointmentId").getAsInt();
+            int newDoctorId = jsonRequest.get("newDoctorId").getAsInt();
             String newDate = jsonRequest.get("newDate").getAsString();
             String newTime = jsonRequest.get("newTime").getAsString();
             
             try (Connection conn = DatabaseConnection.getConnection()) {
-                String sql = "UPDATE appointments SET appointment_date = ?, appointment_time = ? WHERE id = ?";
+                String sql = "UPDATE appointments SET doctor_id = ?, appointment_date = ?, appointment_time = ? WHERE id = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                stmt.setString(1, newDate);
-                stmt.setString(2, newTime);
-                stmt.setInt(3, appointmentId);
+                stmt.setInt(1, newDoctorId);
+                stmt.setString(2, newDate);
+                stmt.setString(3, newTime);
+                stmt.setInt(4, appointmentId);
                 
                 int rowsUpdated = stmt.executeUpdate();
                 

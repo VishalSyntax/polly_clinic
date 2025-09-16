@@ -24,8 +24,7 @@ public class GetAllAppointmentsServlet extends HttpServlet {
                         "p.name as patient_name, p.contact_number, a.status " +
                         "FROM appointments a " +
                         "JOIN patients p ON a.patient_id = p.patient_id " +
-                        "JOIN users u ON a.doctor_id = u.id " +
-                        "WHERE a.doctor_id = ? " +
+                        "WHERE a.doctor_id = ? AND a.status = 'scheduled' " +
                         "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
             
             PreparedStatement stmt = conn.prepareStatement(sql);

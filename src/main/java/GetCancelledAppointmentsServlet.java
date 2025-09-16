@@ -1,4 +1,5 @@
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +11,8 @@ import java.sql.ResultSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class GetAppointmentsServlet extends HttpServlet {
+@WebServlet("/getCancelledAppointments")
+public class GetCancelledAppointmentsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         response.setContentType("application/json");
@@ -19,13 +21,13 @@ public class GetAppointmentsServlet extends HttpServlet {
         JsonArray appointmentsArray = new JsonArray();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT a.id, a.appointment_date, a.appointment_time, a.patient_id, a.doctor_id, " +
-                        "p.name as patient_name, p.email, p.contact_number, d.name as doctor_name " +
+            String sql = "SELECT a.id, a.appointment_date, a.appointment_time, a.patient_id, " +
+                        "p.name as patient_name, p.contact_number, d.name as doctor_name " +
                         "FROM appointments a " +
                         "JOIN patients p ON a.patient_id = p.patient_id " +
                         "JOIN doctors d ON a.doctor_id = d.id " +
-                        "WHERE a.status = 'scheduled' " +
-                        "ORDER BY a.appointment_date DESC, a.appointment_time";
+                        "WHERE a.status = 'cancelled' " +
+                        "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
             
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -37,9 +39,7 @@ public class GetAppointmentsServlet extends HttpServlet {
                 appointment.addProperty("time", rs.getString("appointment_time"));
                 appointment.addProperty("patientId", rs.getString("patient_id"));
                 appointment.addProperty("patientName", rs.getString("patient_name"));
-                appointment.addProperty("email", rs.getString("email"));
                 appointment.addProperty("contactNumber", rs.getString("contact_number"));
-                appointment.addProperty("doctorId", rs.getInt("doctor_id"));
                 appointment.addProperty("doctorName", rs.getString("doctor_name"));
                 appointmentsArray.add(appointment);
             }

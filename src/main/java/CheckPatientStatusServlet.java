@@ -34,10 +34,11 @@ public class CheckPatientStatusServlet extends HttpServlet {
         try {
             Connection conn = DatabaseConnection.getConnection();
             
+            // Check for any scheduled appointment
             String sql = "SELECT a.status, d.name as doctor_name " +
                         "FROM appointments a " +
                         "JOIN doctors d ON a.doctor_id = d.id " +
-                        "WHERE a.patient_id = ? " +
+                        "WHERE a.patient_id = ? AND a.status = 'scheduled' " +
                         "ORDER BY a.appointment_date DESC, a.appointment_time DESC " +
                         "LIMIT 1";
             
@@ -48,14 +49,15 @@ public class CheckPatientStatusServlet extends HttpServlet {
             JsonObject statusResponse = new JsonObject();
             
             if (rs.next()) {
-                // Found last appointment
+                // Found scheduled appointment
                 String status = rs.getString("status");
                 String doctorName = rs.getString("doctor_name");
-                statusResponse.addProperty("lastAppointmentStatus", status);
+                
+                statusResponse.addProperty("lastAppointmentStatus", "scheduled");
                 statusResponse.addProperty("doctorName", doctorName);
-                statusResponse.addProperty("hasScheduledAppointment", "scheduled".equals(status));
+                statusResponse.addProperty("hasScheduledAppointment", true);
             } else {
-                // No appointments found
+                // No scheduled appointments found
                 statusResponse.addProperty("hasScheduledAppointment", false);
                 statusResponse.addProperty("lastAppointmentStatus", "none");
             }

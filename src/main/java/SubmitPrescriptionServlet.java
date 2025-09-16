@@ -37,15 +37,17 @@ public class SubmitPrescriptionServlet extends HttpServlet {
             int doctorId = requestData.get("doctorId").getAsInt();
             JsonArray medicines = requestData.getAsJsonArray("medicines");
             
-            // Get patient email
-            String emailSql = "SELECT email FROM patients WHERE patient_id = ?";
-            PreparedStatement emailStmt = conn.prepareStatement(emailSql);
-            emailStmt.setString(1, patientId);
-            ResultSet emailRs = emailStmt.executeQuery();
+            // Get patient contact and name
+            String patientSql = "SELECT name, contact_number FROM patients WHERE patient_id = ?";
+            PreparedStatement patientStmt = conn.prepareStatement(patientSql);
+            patientStmt.setString(1, patientId);
+            ResultSet patientRs = patientStmt.executeQuery();
             
-            String patientEmail = "";
-            if (emailRs.next()) {
-                patientEmail = emailRs.getString("email");
+            String patientName = "";
+            String patientContact = "";
+            if (patientRs.next()) {
+                patientName = patientRs.getString("name");
+                patientContact = patientRs.getString("contact_number");
             }
             
             // Insert prescriptions
@@ -73,7 +75,8 @@ public class SubmitPrescriptionServlet extends HttpServlet {
             conn.commit();
             
             jsonResponse.addProperty("success", true);
-            jsonResponse.addProperty("patientEmail", patientEmail);
+            jsonResponse.addProperty("patientName", patientName);
+            jsonResponse.addProperty("patientContact", patientContact);
             jsonResponse.addProperty("message", "Prescription submitted successfully");
             
         } catch (Exception e) {

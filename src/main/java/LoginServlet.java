@@ -19,11 +19,29 @@ public class LoginServlet extends HttpServlet {
         
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String selectedUserType = request.getParameter("userType");
         
         JsonObject jsonResponse = new JsonObject();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT u.id, u.user_type, d.name as doctor_name, r.name as receptionist_name " +
+            // First check if user exists and is deactivated
+            String checkSql = "SELECT is_active FROM users WHERE username = ? AND password = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
+            checkStmt.setString(1, username);
+            checkStmt.setString(2, password);
+            ResultSet checkRs = checkStmt.executeQuery();
+            
+            if (checkRs.next()) {
+                boolean isActive = checkRs.getBoolean("is_active");
+                if (!isActive) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "You are deactivated. Contact admin panel.");
+                    out.print(jsonResponse.toString());
+                    return;
+                }
+            }
+            
+            String sql = "SELECT u.id, u.user_type, d.id as doctor_id, d.name as doctor_name, r.name as receptionist_name " +
                         "FROM users u " +
                         "LEFT JOIN doctors d ON u.id = d.user_id " +
                         "LEFT JOIN receptionists r ON u.id = r.user_id " +
@@ -36,15 +54,27 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
+                String actualUserType = rs.getString("user_type");
+                
+                // Validate that selected user type matches actual user type
+                if (!actualUserType.equals(selectedUserType)) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Please select the correct user type for your account");
+                    out.print(jsonResponse.toString());
+                    return;
+                }
+                
                 jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("userType", rs.getString("user_type"));
+                jsonResponse.addProperty("userType", actualUserType);
                 jsonResponse.addProperty("userId", rs.getInt("id"));
                 
-                String userType = rs.getString("user_type");
+                String userType = actualUserType;
                 if ("doctor".equals(userType)) {
                     String doctorName = rs.getString("doctor_name");
+                    int doctorId = rs.getInt("doctor_id");
                     jsonResponse.addProperty("name", doctorName);
                     jsonResponse.addProperty("doctorName", doctorName);
+                    jsonResponse.addProperty("doctorId", doctorId);
                     jsonResponse.addProperty("redirectUrl", "doctor-appointments.html");
                 } else if ("receptionist".equals(userType)) {
                     String receptionistName = rs.getString("receptionist_name");

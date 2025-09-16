@@ -17,3 +17,25 @@
     margin-bottom: 15px;
     font-size: 14px;
 }
+
+.dashboard-card {
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+.dashboard-card:hover {
+            border-color: #007bff;
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .card-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .user-info-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 1rem;
+            margin-bottom: 1.5rem;

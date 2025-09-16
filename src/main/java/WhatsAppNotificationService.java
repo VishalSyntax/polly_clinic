@@ -1,10 +1,8 @@
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.URI;
 import java.util.Base64;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 public class WhatsAppNotificationService {
     private static final String TWILIO_ACCOUNT_SID = "your_account_sid";
@@ -19,7 +17,7 @@ public class WhatsAppNotificationService {
             "⏰ *Time:* %s\n" +
             "👨‍⚕️ *Doctor:* %s\n\n" +
             "📍 Please arrive 15 minutes early\n" +
-            "📞 Contact: +91-XXXXXXXXXX\n\n" +
+            "📞 Contact: +91-9579575606\n\n" +
             "Thank you for choosing PollyClinic!", 
             patientName, patientId, date, time, doctorName);
         sendWhatsAppMessage(patientPhone, message);
@@ -32,7 +30,7 @@ public class WhatsAppNotificationService {
             "📅 *Cancelled Date:* %s\n" +
             "⏰ *Cancelled Time:* %s\n" +
             "👨‍⚕️ *Doctor:* %s\n\n" +
-            "📞 To reschedule, call: +91-XXXXXXXXXX\n" +
+            "📞 To reschedule, call: +91-9579575606\n" +
             "🌐 Or visit our website\n\n" +
             "We apologize for any inconvenience.", 
             patientName, patientId, date, time, doctorName);

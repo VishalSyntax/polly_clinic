@@ -19,7 +19,7 @@ public class GetDoctorsServlet extends HttpServlet {
         JsonArray doctorsArray = new JsonArray();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "SELECT d.user_id, d.name, d.specialization FROM doctors d " +
+            String sql = "SELECT d.id, d.name, d.specialization FROM doctors d " +
                         "JOIN users u ON d.user_id = u.id WHERE u.is_active = TRUE";
             
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -27,7 +27,7 @@ public class GetDoctorsServlet extends HttpServlet {
             
             while (rs.next()) {
                 JsonObject doctor = new JsonObject();
-                doctor.addProperty("id", rs.getInt("user_id"));
+                doctor.addProperty("id", rs.getInt("id"));
                 doctor.addProperty("name", rs.getString("name"));
                 doctor.addProperty("specialization", rs.getString("specialization"));
                 doctorsArray.add(doctor);

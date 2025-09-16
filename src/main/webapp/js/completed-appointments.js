@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadAllCompletedAppointments() {
     try {
-        const doctorId = localStorage.getItem('userId');
+        const doctorId = localStorage.getItem('doctorId');
         let url = 'getCompletedAppointments';
         if (doctorId && localStorage.getItem('userType') === 'doctor') {
             url += '?doctorId=' + doctorId;
@@ -25,7 +25,7 @@ async function searchAppointments() {
     }
 
     try {
-        const doctorId = localStorage.getItem('userId');
+        const doctorId = localStorage.getItem('doctorId');
         let url = `searchCompletedAppointments?search=${encodeURIComponent(searchTerm)}`;
         if (doctorId && localStorage.getItem('userType') === 'doctor') {
             url += '&doctorId=' + doctorId;
@@ -62,8 +62,8 @@ function displayAppointments(appointments) {
             <td>${appointment.contactNumber}</td>
             <td>${appointment.doctorName}</td>
             <td>
-                <button class="btn btn-info btn-sm me-1" onclick="viewPrescription('${appointment.id}')">View Prescription</button>
-                <button class="btn btn-secondary btn-sm" onclick="viewRemarks('${appointment.patientId}')">View Remarks</button>
+                <button class="btn btn-primary btn-sm me-1" onclick="viewPrescription('${appointment.id}')">View Prescription</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="viewRemarks('${appointment.patientId}')">View Remarks</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -72,21 +72,49 @@ function displayAppointments(appointments) {
 
 async function viewPrescription(appointmentId) {
     try {
-        const response = await fetch(`getPrescription?appointmentId=${appointmentId}`);
+        const doctorId = localStorage.getItem('doctorId');
+        let url = `getPrescription?appointmentId=${appointmentId}`;
+        if (doctorId && localStorage.getItem('userType') === 'doctor') {
+            url += `&doctorId=${doctorId}`;
+        }
+        const response = await fetch(url);
         const prescription = await response.json();
         
         const content = document.getElementById('prescriptionContent');
         if (prescription.length === 0) {
             content.innerHTML = '<div class="alert alert-info">No prescription found for this appointment.</div>';
         } else {
-            let html = '';
+            // Group medicines by prescription date
+            const groupedByDate = {};
             prescription.forEach(med => {
+                const prescriptionDate = med.prescriptionDate ? new Date(med.prescriptionDate).toLocaleString() : 'N/A';
+                if (!groupedByDate[prescriptionDate]) {
+                    groupedByDate[prescriptionDate] = [];
+                }
+                groupedByDate[prescriptionDate].push(med);
+            });
+            
+            let html = '';
+            Object.keys(groupedByDate).forEach(date => {
                 html += `
-                    <div class="card mb-2">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>Prescription Date: ${date}</strong>
+                        </div>
                         <div class="card-body">
+                `;
+                
+                groupedByDate[date].forEach(med => {
+                    html += `
+                        <div class="mb-2 pb-2 border-bottom">
                             <strong>Medicine:</strong> ${med.medicineName}<br>
                             <strong>Quantity:</strong> ${med.quantity}<br>
                             <strong>Timing:</strong> ${med.timing}
+                        </div>
+                    `;
+                });
+                
+                html += `
                         </div>
                     </div>
                 `;

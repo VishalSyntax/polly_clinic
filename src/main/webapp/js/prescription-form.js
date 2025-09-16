@@ -1,5 +1,28 @@
-// Initialize EmailJS
-emailjs.init("DaTM_GydmK934LWAm");
+// Green API WhatsApp Config to 25
+const GREEN_API_URL = 'https://api.green-api.com';
+const INSTANCE_ID = '7105319809';
+const ACCESS_TOKEN = 'f557539d8a6e4ee0acd5144309849c63a12e5c5094564d73b7';
+
+// Format phone number to international format
+function formatPhoneNumber(phoneNumber) {
+    if (!phoneNumber) return null;
+    
+    // Remove all non-digit characters
+    let cleaned = phoneNumber.replace(/\D/g, '');
+    
+    // If number starts with 91, use as is
+    if (cleaned.startsWith('91') && cleaned.length === 12) {
+        return cleaned;
+    }
+    
+    // If 10 digit number, add 91 prefix
+    if (cleaned.length === 10) {
+        return '91' + cleaned;
+    }
+    
+    // Return original if already in correct format or unknown format
+    return cleaned;
+}
 
 let appointmentId, patientId;
 
@@ -126,7 +149,7 @@ async function submitPrescription(event) {
             body: JSON.stringify({
                 appointmentId: appointmentId,
                 patientId: patientId,
-                doctorId: parseInt(localStorage.getItem('userId')) || 2,
+                doctorId: parseInt(localStorage.getItem('doctorId')) || 1,
                 medicines: medicines
             })
         });
@@ -134,8 +157,8 @@ async function submitPrescription(event) {
         const result = await response.json();
         
         if (result.success) {
-            // Send prescription ready email
-            await sendPrescriptionEmail(result.patientEmail, result.patientName, medicines);
+            // Send prescription ready WhatsApp message
+            await sendPrescriptionWhatsApp(result.patientContact, result.patientName, medicines);
             alert('Prescription submitted successfully!');
             window.location.href = 'doctor-appointments.html';
         } else {
@@ -147,25 +170,46 @@ async function submitPrescription(event) {
     }
 }
 
-// Send prescription ready email
-async function sendPrescriptionEmail(patientEmail, patientName, medicines) {
+// Send prescription ready WhatsApp message
+async function sendPrescriptionWhatsApp(patientContact, patientName, medicines) {
+    if (!patientContact || patientContact.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
+        return;
+    }
+    
     const prescriptionDetails = medicines.map(med => 
         `• ${med.name} - ${med.quantity} - ${med.timing}`
     ).join('\n');
     
-    const templateParams = {
-        to_email: patientEmail,
-        patient_name: patientName,
-        patient_id: patientId,
-        prescription_date: new Date().toLocaleDateString(),
-        doctor_name: localStorage.getItem('userName') || 'Doctor',
-        prescription_details: prescriptionDetails
-    };
+    const doctorName = localStorage.getItem('doctorName') || localStorage.getItem('userName') || 'Doctor';
+    const message = `💊 *PollyClinic Prescription Ready*\n\n` +
+                   `Dear ${patientName},\n\n` +
+                   `Your prescription has been prepared by ${doctorName}.\n\n` +
+                   `📋 *Prescription Details:*\n` +
+                   `Patient ID: ${patientId}\n` +
+                   `Date: ${new Date().toLocaleDateString()}\n\n` +
+                   `💊 *Medicines:*\n${prescriptionDetails}\n\n` +
+                   `Pls collect your medicines from our medical shop only.\n\n` +
+                   `PollyClinic Team 🙏`;
     
     try {
-        await emailjs.send('service_vf4qmrt', 'prescription_ready', templateParams);
-        console.log('Prescription email sent successfully');
+        const response = await fetch(`${GREEN_API_URL}/waInstance${INSTANCE_ID}/sendMessage/${ACCESS_TOKEN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chatId: `${formatPhoneNumber(patientContact)}@c.us`,
+                message: message
+            })
+        });
+        
+        if (response.ok) {
+            console.log('WhatsApp prescription notification sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
+        }
     } catch (error) {
-        console.error('Error sending prescription email:', error);
+        console.error('Error sending WhatsApp message:', error);
     }
 }

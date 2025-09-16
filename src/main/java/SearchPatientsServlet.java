@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
+@WebServlet("/searchPatients")
 public class SearchPatientsServlet extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -35,8 +36,8 @@ public class SearchPatientsServlet extends HttpServlet {
                 case "contact":
                     sql = "SELECT * FROM patients WHERE contact_number LIKE ?";
                     break;
-                case "email":
-                    sql = "SELECT * FROM patients WHERE email LIKE ?";
+                case "name":
+                    sql = "SELECT * FROM patients WHERE name LIKE ?";
                     break;
                 default:
                     sql = "SELECT * FROM patients WHERE name LIKE ?";

@@ -5,7 +5,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const doctorBtn = document.getElementById('doctorBtn');
     const loginForm = document.getElementById('loginForm');
     
-    let selectedUserType = 'receptionist'; // Default selection
+    // to save last selected user type from localStorage but default to receptionist
+    let selectedUserType = localStorage.getItem('lastSelectedUserType') || 'receptionist';
+    
+    //  for receptionist and doctor
+    if (selectedUserType === 'receptionist' || selectedUserType === 'doctor') {
+        selectUserType(selectedUserType);
+    } else {
+        selectedUserType = 'receptionist';
+        selectUserType('receptionist');
+    }
     
     // Admin toggle functionality
     if (adminToggle) {
@@ -35,6 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById(type + 'Btn').classList.add('active');
         
         selectedUserType = type;
+        
+        // only for receptionist and doctor for checking
+        if (type === 'receptionist' || type === 'doctor') {
+            localStorage.setItem('lastSelectedUserType', type);
+        }
     }
     
     // Form submission
@@ -72,11 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.doctorName) {
                     localStorage.setItem('doctorName', result.doctorName);
                 }
+                if (result.doctorId) {
+                    localStorage.setItem('doctorId', result.doctorId);
+                }
                 if (result.name) {
                     localStorage.setItem('userName', result.name);
                 }
                 
-                // Redirect based on user type
+                // after successfull login redirect following pages
                 switch(result.userType) {
                     case 'admin':
                         window.location.href = 'admin-dashboard.html';
