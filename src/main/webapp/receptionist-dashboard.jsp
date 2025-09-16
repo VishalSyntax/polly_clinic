@@ -1,8 +1,3 @@
-<%
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,11 +131,21 @@
 
     <script>
         // Prevent back button access after logout
-        if (!${user != null ? 'true' : 'false'}) {
+        window.addEventListener('load', function() {
+            if (performance.navigation.type === 2) {
+                window.location.replace('index.jsp');
+            }
+        });
+        
+        // Clear history on logout
+        document.querySelector('.logout').addEventListener('click', function(e) {
+            e.preventDefault();
             window.location.replace('index.jsp');
-        }
+        });
     </script>
     <script src="js/bootstrap.bundle.min_2.js"></script>
     <script src="js/receptionist-dashboard.js"></script>
 </body>
 </html>
+
+
