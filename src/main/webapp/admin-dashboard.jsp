@@ -1,8 +1,3 @@
-<%
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,8 +23,8 @@
     </div>
     
     <div class="main-content">
-      <div class="login-container" style="width: 50%; max-width: none;">
-        <h1>Admin Dashboard - Welcome, ${user}!</h1>
+      <div class="login-container" style="width: 60%; max-width: none;">
+        <h1>Admin Dashboard</h1>
         
         <div class="stats-grid">
             <div class="stat-card">
@@ -78,17 +73,20 @@
     
     <script>
         // Prevent back button access after logout
-        if (!${user != null ? 'true' : 'false'}) {
-            window.location.replace('index.jsp');
-        }
-        
-        // Clear browser history on logout
-        window.addEventListener('beforeunload', function() {
-            if (performance.navigation.type === 1) {
+        window.addEventListener('load', function() {
+            if (performance.navigation.type === 2) {
                 window.location.replace('index.jsp');
             }
+        });
+        
+        // Clear history on logout
+        document.querySelector('.logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.replace('index.jsp');
         });
     </script>
     <script src="js/admin-dashboard.js"></script>
 </body>
 </html>
+
+
