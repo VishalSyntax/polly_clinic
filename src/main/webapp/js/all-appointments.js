@@ -159,5 +159,5 @@ function closeModal() {
 }
 
 function generatePrescription(appointmentId, patientId) {
-    window.location.href = `prescription-form.html?appointmentId=${appointmentId}&patientId=${patientId}`;
+    window.location.href = `prescription-form.jsp?appointmentId=${appointmentId}&patientId=${patientId}`;
 }

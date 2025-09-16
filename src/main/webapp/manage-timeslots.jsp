@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,13 +13,13 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="admin-dashboard.html">Dashboard</a>
-      <a href="manage-doctors.html">Manage Doctors</a>
-      <a href="manage-staff.html">Manage Staff</a>
-      <a href="manage-timeslots.html" class="active">Time Slots</a>
-      <a href="reports.html">Reports</a>
-      <a href="system-settings.html">Settings</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="admin-dashboard.jsp">Dashboard</a>
+      <a href="manage-doctors.jsp">Manage Doctors</a>
+      <a href="manage-staff.jsp">Manage Staff</a>
+      <a href="manage-timeslots.jsp" class="active">Time Slots</a>
+      <a href="reports.jsp">Reports</a>
+      <a href="system-settings.jsp">Settings</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -49,3 +49,5 @@
     <script src="js/manage-timeslots.js"></script>
 </body>
 </html>
+
+

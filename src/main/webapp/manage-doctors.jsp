@@ -1,3 +1,8 @@
+<%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,12 +18,12 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="admin-dashboard.html">Dashboard</a>
-      <a href="manage-doctors.html" class="active">Manage Doctors</a>
-      <a href="manage-staff.html">Manage Staff</a>
-      <a href="reports.html">Reports</a>
-      <a href="system-settings.html">Settings</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="admin-dashboard.jsp">Dashboard</a>
+      <a href="manage-doctors.jsp" class="active">Manage Doctors</a>
+      <a href="manage-staff.jsp">Manage Staff</a>
+      <a href="reports.jsp">Reports</a>
+      <a href="system-settings.jsp">Settings</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -89,6 +94,12 @@
       </div>
     </div>
     
+    <script>
+        // Prevent back button access after logout
+        if (!${user != null ? 'true' : 'false'}) {
+            window.location.replace('index.jsp');
+        }
+    </script>
     <script src="js/manage-doctors.js"></script>
 </body>
 </html>

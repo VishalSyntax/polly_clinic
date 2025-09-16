@@ -1,3 +1,8 @@
+<%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,18 +18,18 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="admin-dashboard.html" class="active">Dashboard</a>
-      <a href="manage-doctors.html">Manage Doctors</a>
-      <a href="manage-staff.html">Manage Staff</a>
-      <a href="manage-timeslots.html">Time Slots</a>
-      <a href="reports.html">Reports</a>
-      <a href="system-settings.html">Settings</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="admin-dashboard.jsp" class="active">Dashboard</a>
+      <a href="manage-doctors.jsp">Manage Doctors</a>
+      <a href="manage-staff.jsp">Manage Staff</a>
+      <a href="manage-timeslots.jsp">Time Slots</a>
+      <a href="reports.jsp">Reports</a>
+      <a href="system-settings.jsp">Settings</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
       <div class="login-container" style="width: 50%; max-width: none;">
-        <h1>Admin Dashboard</h1>
+        <h1>Admin Dashboard - Welcome, ${user}!</h1>
         
         <div class="stats-grid">
             <div class="stat-card">
@@ -47,10 +52,10 @@
         
         <h2>Quick Actions</h2>
         <div class="admin-actions">
-            <button class="login-btn" onclick="window.location.href='manage-doctors.html'">Add New Doctor</button>
-            <button class="login-btn" onclick="window.location.href='manage-staff.html'">Add Staff Member</button>
-            <button class="login-btn" onclick="window.location.href='reports.html'">View Reports</button>
-            <button class="login-btn" onclick="window.location.href='system-settings.html'">System Settings</button>
+            <button class="login-btn" onclick="window.location.href='manage-doctors.jsp'">Add New Doctor</button>
+            <button class="login-btn" onclick="window.location.href='manage-staff.jsp'">Add Staff Member</button>
+            <button class="login-btn" onclick="window.location.href='reports.jsp'">View Reports</button>
+            <button class="login-btn" onclick="window.location.href='system-settings.jsp'">System Settings</button>
         </div>
         
         <h2>Recent Activity</h2>
@@ -71,6 +76,19 @@
       </div>
     </div>
     
+    <script>
+        // Prevent back button access after logout
+        if (!${user != null ? 'true' : 'false'}) {
+            window.location.replace('index.jsp');
+        }
+        
+        // Clear browser history on logout
+        window.addEventListener('beforeunload', function() {
+            if (performance.navigation.type === 1) {
+                window.location.replace('index.jsp');
+            }
+        });
+    </script>
     <script src="js/admin-dashboard.js"></script>
 </body>
 </html>

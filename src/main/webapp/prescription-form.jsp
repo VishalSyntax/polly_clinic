@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,10 +13,10 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="doctor-appointments.html">Today's Appointments</a>
-        <a href="all-appointments.html">All Appointments</a>
-        <a href="completed-appointments.html">Completed Appointments</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="doctor-appointments.jsp">Today's Appointments</a>
+        <a href="all-appointments.jsp">All Appointments</a>
+        <a href="completed-appointments.jsp">Completed Appointments</a>
+        <a href="index.jsp" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
@@ -74,3 +74,5 @@
     <script src="js/prescription-form.js"></script>
 </body>
 </html>
+
+

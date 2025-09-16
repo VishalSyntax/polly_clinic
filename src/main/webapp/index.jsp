@@ -21,21 +21,27 @@
         </div>
         <h1>PollyClinic Login</h1>
         
+        <% if (request.getAttribute("errorMessage") != null) { %>
+            <div style="color: red; text-align: center; margin-bottom: 15px; padding: 10px; background-color: #ffe6e6; border: 1px solid #ff9999; border-radius: 5px;">
+                <%= request.getAttribute("errorMessage") %>
+            </div>
+        <% } %>
+        
         <div class="user-types">
             <button class="user-btn active" id="receptionistBtn">Receptionist</button>
             <button class="user-btn" id="doctorBtn">Doctor</button>
             <button class="user-btn hidden" id="adminBtn">Admin</button>
         </div>
         
-        <form id="loginForm">
+        <form id="loginForm" action="login" method="post">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" class="form-control" required>
+                <input type="text" id="username" name="username" class="form-control" required>
             </div>
             
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" required>
             </div>
             
             <button type="submit" class="login-btn">Login</button>

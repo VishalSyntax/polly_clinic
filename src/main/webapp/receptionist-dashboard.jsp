@@ -1,3 +1,8 @@
+<%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,11 +21,11 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="receptionist-dashboard.html" class="active">Dashboard</a>
-        <a href="appointment-booking.html">Book Appointment</a>
-        <a href="view-appointments.html">View Appointments</a>
-        <a href="patient_search.html">Patient Search</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="receptionist-dashboard.jsp" class="active">Dashboard</a>
+        <a href="appointment-booking.jsp">Book Appointment</a>
+        <a href="view-appointments.jsp">View Appointments</a>
+        <a href="patient_search.jsp">Patient Search</a>
+        <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -32,7 +37,7 @@
                         <i class="bi bi-person-circle me-3 text-primary" style="font-size: 2rem;"></i>
                         <div>
                             <h5 class="mb-1">Welcome Back!</h5>
-                            <p class="mb-0 text-muted" id="userInfo">Loading user information...</p>
+                            <p class="mb-0 text-muted" id="userInfo">Welcome, ${user}!</p>
                         </div>
                     </div>
                 </div>
@@ -56,7 +61,7 @@
 
                 
                 <div class="col-xl-3 col-md-6">
-                    <div class="card dashboard-card h-100" onclick="window.location.href='appointment-booking.html'">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='appointment-booking.jsp'">
                         <div class="card-body text-center">
                             <i class="bi bi-plus-circle card-icon text-success"></i>
                             <h6 class="card-title mt-2">Book New Appointment</h6>
@@ -67,7 +72,7 @@
 
                 
                 <div class="col-xl-3 col-md-6">
-                    <div class="card dashboard-card h-100" onclick="window.location.href='view-appointments.html'">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='view-appointments.jsp'">
                         <div class="card-body text-center">
                             <i class="bi bi-list-ul card-icon text-info"></i>
                             <h6 class="card-title mt-2">View Appointments</h6>
@@ -78,7 +83,7 @@
 
               
                 <div class="col-xl-3 col-md-6">
-                    <div class="card dashboard-card h-100" onclick="window.location.href='patient_search.html'">
+                    <div class="card dashboard-card h-100" onclick="window.location.href='patient_search.jsp'">
                         <div class="card-body text-center">
                             <i class="bi bi-search card-icon text-warning"></i>
                             <h6 class="card-title mt-2">Search Patient</h6>
@@ -129,6 +134,12 @@
         </div>
     </div>
 
+    <script>
+        // Prevent back button access after logout
+        if (!${user != null ? 'true' : 'false'}) {
+            window.location.replace('index.jsp');
+        }
+    </script>
     <script src="js/bootstrap.bundle.min_2.js"></script>
     <script src="js/receptionist-dashboard.js"></script>
 </body>

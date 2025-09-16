@@ -3,6 +3,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -14,14 +15,9 @@ import com.google.gson.JsonObject;
 public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String selectedUserType = request.getParameter("userType");
-        
-        JsonObject jsonResponse = new JsonObject();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
             // First check if user exists and is deactivated
@@ -34,9 +30,9 @@ public class LoginServlet extends HttpServlet {
             if (checkRs.next()) {
                 boolean isActive = checkRs.getBoolean("is_active");
                 if (!isActive) {
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "You are deactivated. Contact admin panel.");
-                    out.print(jsonResponse.toString());
+                    request.setAttribute("errorMessage", "You are deactivated. Contact admin panel.");
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
+                    dispatcher.forward(request, response);
                     return;
                 }
             }
@@ -58,42 +54,44 @@ public class LoginServlet extends HttpServlet {
                 
                 // Validate that selected user type matches actual user type
                 if (!actualUserType.equals(selectedUserType)) {
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Please select the correct user type for your account");
-                    out.print(jsonResponse.toString());
+                    request.setAttribute("errorMessage", "Please select the correct user type for your account");
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
+                    dispatcher.forward(request, response);
                     return;
                 }
                 
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("userType", actualUserType);
-                jsonResponse.addProperty("userId", rs.getInt("id"));
+                // Set user attributes for JSP
+                request.setAttribute("userId", rs.getInt("id"));
+                request.setAttribute("userType", actualUserType);
                 
+                String destination = "";
                 String userType = actualUserType;
                 if ("doctor".equals(userType)) {
                     String doctorName = rs.getString("doctor_name");
                     int doctorId = rs.getInt("doctor_id");
-                    jsonResponse.addProperty("name", doctorName);
-                    jsonResponse.addProperty("doctorName", doctorName);
-                    jsonResponse.addProperty("doctorId", doctorId);
-                    jsonResponse.addProperty("redirectUrl", "doctor-appointments.html");
+                    request.setAttribute("user", doctorName);
+                    request.setAttribute("doctorId", doctorId);
+                    destination = "doctor-appointments.jsp";
                 } else if ("receptionist".equals(userType)) {
                     String receptionistName = rs.getString("receptionist_name");
-                    jsonResponse.addProperty("name", receptionistName);
-                    jsonResponse.addProperty("userName", receptionistName);
-                    jsonResponse.addProperty("redirectUrl", "receptionist-dashboard.html");
+                    request.setAttribute("user", receptionistName);
+                    destination = "receptionist-dashboard.jsp";
                 } else if ("admin".equals(userType)) {
-                    jsonResponse.addProperty("name", "Administrator");
-                    jsonResponse.addProperty("redirectUrl", "admin-dashboard.html");
+                    request.setAttribute("user", "Administrator");
+                    destination = "admin-dashboard.jsp";
                 }
+                
+                RequestDispatcher dispatcher = request.getRequestDispatcher(destination);
+                dispatcher.forward(request, response);
+                return;
             } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Invalid username or password");
+                request.setAttribute("errorMessage", "Invalid username or password");
             }
         } catch (Exception e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Database error: " + e.getMessage());
+            request.setAttribute("errorMessage", "Database error: " + e.getMessage());
         }
         
-        out.print(jsonResponse.toString());
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
+        dispatcher.forward(request, response);
     }
 }

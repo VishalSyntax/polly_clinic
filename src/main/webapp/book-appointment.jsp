@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%\r\n    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");`r`n    response.setHeader("Pragma", "no-cache");`r`n    response.setDateHeader("Expires", 0);\r\n%>`r`n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -85,11 +85,11 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="main.html">Patient Info</a>
-      <a href="appointment-booking.html">Book Appointment</a>
-      <a href="patient_search.html">Patient Search</a>
-      <a href="receptionist-dashboard.html">Dashboard</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="main.jsp">Patient Info</a>
+      <a href="appointment-booking.jsp">Book Appointment</a>
+      <a href="patient_search.jsp">Patient Search</a>
+      <a href="receptionist-dashboard.jsp">Dashboard</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -151,7 +151,7 @@
             </div>
             
             <button type="submit" class="login-btn">Register Patient</button>
-            <button type="button" class="login-btn" onclick="window.location.href='appointment-booking.html'" style="background-color: #3498db; margin-left: 10px;">Book Appointment</button>
+            <button type="button" class="login-btn" onclick="window.location.href='appointment-booking.jsp'" style="background-color: #3498db; margin-left: 10px;">Book Appointment</button>
         </form>
       </div>
     </div>
@@ -179,7 +179,7 @@
             
             // Redirect to appointment booking
             if(confirm('Would you like to book an appointment now?')) {
-                window.location.href = 'appointment-booking.html';
+                window.location.href = 'appointment-booking.jsp';
             } else {
                 this.reset();
             }
@@ -187,3 +187,5 @@
     </script>
 </body>
 </html>
+
+

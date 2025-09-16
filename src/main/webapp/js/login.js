@@ -52,65 +52,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Form submission
-    loginForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        await login();
-    });
-    
-    async function login() {
+    loginForm.addEventListener('submit', function(e) {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         
         if (!username || !password) {
+            e.preventDefault();
             alert('Please fill in all fields');
             return;
         }
         
-        try {
-            const response = await fetch('login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&userType=${encodeURIComponent(selectedUserType)}`
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                // Store user info in localStorage
-                localStorage.setItem('userId', result.userId);
-                localStorage.setItem('username', username);
-                localStorage.setItem('userType', result.userType);
-                localStorage.setItem('loginTime', new Date().toISOString());
-                if (result.doctorName) {
-                    localStorage.setItem('doctorName', result.doctorName);
-                }
-                if (result.doctorId) {
-                    localStorage.setItem('doctorId', result.doctorId);
-                }
-                if (result.name) {
-                    localStorage.setItem('userName', result.name);
-                }
-                
-                // after successfull login redirect following pages
-                switch(result.userType) {
-                    case 'admin':
-                        window.location.href = 'admin-dashboard.html';
-                        break;
-                    case 'doctor':
-                        window.location.href = 'doctor-appointments.html';
-                        break;
-                    case 'receptionist':
-                        window.location.href = 'receptionist-dashboard.html';
-                        break;
-                }
-            } else {
-                alert(result.message || 'Login failed');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            alert('Login failed. Please try again.');
+        // Add hidden input for userType
+        let userTypeInput = document.getElementById('userTypeInput');
+        if (!userTypeInput) {
+            userTypeInput = document.createElement('input');
+            userTypeInput.type = 'hidden';
+            userTypeInput.name = 'userType';
+            userTypeInput.id = 'userTypeInput';
+            loginForm.appendChild(userTypeInput);
         }
-    }
+        userTypeInput.value = selectedUserType;
+    });
 });

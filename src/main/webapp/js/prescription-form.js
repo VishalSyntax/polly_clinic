@@ -160,7 +160,7 @@ async function submitPrescription(event) {
             // Send prescription ready WhatsApp message
             await sendPrescriptionWhatsApp(result.patientContact, result.patientName, medicines);
             alert('Prescription submitted successfully!');
-            window.location.href = 'doctor-appointments.html';
+            window.location.href = 'doctor-appointments.jsp';
         } else {
             alert('Failed to submit prescription: ' + result.message);
         }

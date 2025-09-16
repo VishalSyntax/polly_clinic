@@ -1,3 +1,8 @@
+<%
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +18,10 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="doctor-appointments.html" class="active">Today's Appointments</a>
-        <a href="all-appointments.html">All Appointments</a>
-        <a href="completed-appointments.html">Completed Appointments</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="doctor-appointments.jsp" class="active">Today's Appointments</a>
+        <a href="all-appointments.jsp">All Appointments</a>
+        <a href="completed-appointments.jsp">Completed Appointments</a>
+        <a href="index.jsp" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
@@ -25,7 +30,7 @@
             <div class="doctor-info" id="doctorInfo" style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                 
             </div>
-            <h1>📅 Today's Appointments</h1>
+            <h1>📅 Today's Appointments - Dr. ${user}</h1>
             
             <div class="appointments-table">
                 <table>
@@ -67,6 +72,12 @@
         </div>
     </div>
 
+    <script>
+        // Prevent back button access after logout
+        if (!${user != null ? 'true' : 'false'}) {
+            window.location.replace('index.jsp');
+        }
+    </script>
     <script src="js/doctor-appointments.js"></script>
 </body>
 </html>
