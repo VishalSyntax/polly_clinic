@@ -1,8 +1,3 @@
-<%
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,10 +91,20 @@
     
     <script>
         // Prevent back button access after logout
-        if (!${user != null ? 'true' : 'false'}) {
-            window.location.replace('index.jsp');
-        }
+        history.pushState(null, null, location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
     </script>
-    <script src="js/manage-doctors.js"></script>
+<script src="js/manage-doctors.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
