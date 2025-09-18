@@ -18,12 +18,13 @@
         <a href="manage-staff.jsp">Manage Staff</a>
         <a href="reports.jsp" class="active">Reports</a>
         <a href="system-settings.jsp">Settings</a>
-        <a href="index.jsp" class="logout">Logout</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
     
     
 </body>
 </html>
+
 
 
 
