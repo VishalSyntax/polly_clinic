@@ -89,7 +89,7 @@
       <a href="appointment-booking.jsp">Book Appointment</a>
       <a href="patient_search.jsp">Patient Search</a>
       <a href="receptionist-dashboard.jsp">Dashboard</a>
-      <a href="index.jsp" class="logout">Logout</a>
+      <a href="logout" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -187,6 +187,7 @@
     </script>
 </body>
 </html>
+
 
 
 
