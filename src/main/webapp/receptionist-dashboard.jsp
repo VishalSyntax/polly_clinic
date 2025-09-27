@@ -20,7 +20,7 @@
         <a href="appointment-booking.jsp">Book Appointment</a>
         <a href="view-appointments.jsp">View Appointments</a>
         <a href="patient_search.jsp">Patient Search</a>
-        <a href="index.jsp" class="logout">Logout</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -31,8 +31,9 @@
                     <div class="d-flex align-items-center">
                         <i class="bi bi-person-circle me-3 text-primary" style="font-size: 2rem;"></i>
                         <div>
-                            <h5 class="mb-1">Welcome Back!</h5>
-                            <p class="mb-0 text-muted" id="userInfo">Welcome, ${user}!</p>
+                            <h5 class="mb-2">Welcome Back!</h5>
+                            <p class="mb-1" id="userInfo"></p>
+                            <p class="mb-0 text-muted" id="current-date"></p>
                         </div>
                     </div>
                 </div>
@@ -147,5 +148,6 @@
     <script src="js/receptionist-dashboard.js"></script>
 </body>
 </html>
+
 
 
