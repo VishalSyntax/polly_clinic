@@ -16,13 +16,13 @@
         <a href="doctor-appointments.jsp">Today's Appointments</a>
         <a href="all-appointments.jsp">All Appointments</a>
         <a href="completed-appointments.jsp">Completed Appointments</a>
-        <a href="index.jsp" class="logout">Logout</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
         <div class="login-container">
             <div class="current-time" id="currentDateTime"></div>
-            <h1>🩺 Prescription Form</h1>
+            <h1>Prescription Form</h1>
             <p style="color: #666; margin-bottom: 20px;">Patient ID: <span id="patientId" style="font-weight: bold;"></span></p>
             
             <form id="prescriptionForm" onsubmit="submitPrescription(event)">
@@ -74,6 +74,7 @@
     <script src="js/prescription-form.js"></script>
 </body>
 </html>
+
 
 
 
