@@ -2,6 +2,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -16,7 +17,22 @@ public class GetCompletedAppointmentsServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         
-        String doctorId = request.getParameter("doctorId");
+        HttpSession session = request.getSession(false);
+        if (session == null || !"doctor".equals(session.getAttribute("role"))) {
+            JsonObject error = new JsonObject();
+            error.addProperty("error", "Unauthorized access");
+            out.print(error.toString());
+            return;
+        }
+        
+        Integer doctorId = (Integer) session.getAttribute("doctorId");
+        if (doctorId == null) {
+            JsonObject error = new JsonObject();
+            error.addProperty("error", "Doctor ID not found in session");
+            out.print(error.toString());
+            return;
+        }
+        
         JsonArray appointmentsArray = new JsonArray();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
@@ -25,19 +41,11 @@ public class GetCompletedAppointmentsServlet extends HttpServlet {
                         "FROM appointments a " +
                         "JOIN patients p ON a.patient_id = p.patient_id " +
                         "JOIN doctors d ON a.doctor_id = d.id " +
-                        "WHERE a.status = 'completed'";
-            
-            // Add doctor filter if doctorId is provided
-            if (doctorId != null && !doctorId.isEmpty()) {
-                sql += " AND a.doctor_id = ?";
-            }
-            
-            sql += " ORDER BY a.appointment_date DESC";
+                        "WHERE a.doctor_id = ? AND a.status = 'completed' " +
+                        "ORDER BY a.appointment_date DESC";
             
             PreparedStatement stmt = conn.prepareStatement(sql);
-            if (doctorId != null && !doctorId.isEmpty()) {
-                stmt.setInt(1, Integer.parseInt(doctorId));
-            }
+            stmt.setInt(1, doctorId);
             ResultSet rs = stmt.executeQuery();
             
             while (rs.next()) {
