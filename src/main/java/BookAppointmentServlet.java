@@ -41,7 +41,7 @@ public class BookAppointmentServlet extends HttpServlet {
                 patientId = requestData.get("patientId").getAsString();
             } else {
                 // New patient - generate ID and insert patient
-                patientId = "P" + System.currentTimeMillis();
+                patientId = generatePatientId();
                 
                 String patientSql = "INSERT INTO patients (patient_id, name, address, contact_number, email) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement patientStmt = conn.prepareStatement(patientSql);
@@ -92,5 +92,40 @@ public class BookAppointmentServlet extends HttpServlet {
         }
         
         out.print(jsonResponse.toString());
+    }
+    
+    private String generatePatientId() throws Exception {
+        java.time.LocalDate now = java.time.LocalDate.now();
+        String year = String.format("%02d", now.getYear() % 100);
+        String month = String.format("%02d", now.getMonthValue());
+        String day = String.format("%02d", now.getDayOfMonth());
+        
+        String patientId;
+        int attempts = 0;
+        
+        do {
+            int random = (int)(Math.random() * 900) + 100;
+            patientId = "P" + year + month + day + random;
+            attempts++;
+            
+            if (attempts > 100) {
+                throw new Exception("Unable to generate unique patient ID after 100 attempts");
+            }
+        } while (patientIdExists(patientId));
+        
+        return patientId;
+    }
+    
+    private boolean patientIdExists(String patientId) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT COUNT(*) FROM patients WHERE patient_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, patientId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt(1) > 0;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
