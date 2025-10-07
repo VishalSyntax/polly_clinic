@@ -2,6 +2,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
@@ -15,6 +16,24 @@ public class SaveRemarkServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
+        
+        HttpSession session = request.getSession(false);
+        if (session == null || !"doctor".equals(session.getAttribute("role"))) {
+            JsonObject error = new JsonObject();
+            error.addProperty("success", false);
+            error.addProperty("message", "Unauthorized access");
+            out.print(error.toString());
+            return;
+        }
+        
+        Integer doctorId = (Integer) session.getAttribute("doctorId");
+        if (doctorId == null) {
+            JsonObject error = new JsonObject();
+            error.addProperty("success", false);
+            error.addProperty("message", "Doctor ID not found in session");
+            out.print(error.toString());
+            return;
+        }
         
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = request.getReader();
@@ -31,7 +50,7 @@ public class SaveRemarkServlet extends HttpServlet {
             
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, requestData.get("patientId").getAsString());
-            stmt.setInt(2, requestData.get("doctorId").getAsInt());
+            stmt.setInt(2, doctorId);
             stmt.setInt(3, requestData.get("appointmentId").getAsInt());
             stmt.setString(4, requestData.get("remarks").getAsString());
             
