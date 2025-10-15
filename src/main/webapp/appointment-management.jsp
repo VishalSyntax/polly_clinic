@@ -144,7 +144,7 @@
       <a href="patient_search.jsp">Patient Search</a>
       <a href="appointment-management.jsp" class="active">Appointments</a>
       <a href="receptionist-dashboard.jsp">Dashboard</a>
-      <a href="index.jsp" class="logout">Logout</a>
+      <a href="logout" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -237,6 +237,7 @@
     </script>
 </body>
 </html>
+
 
 
 
