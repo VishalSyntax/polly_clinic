@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Appointment - AppointCare</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/common-sidebar.css">
     <link rel="stylesheet" href="css/appointment-booking.css">
+    <link rel="stylesheet" href="css/bootstrap-sidebar-override.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
@@ -18,7 +21,7 @@
       <a href="appointment-booking.jsp" class="active">Book Appointment</a>
       <a href="view-appointments.jsp">View Appointments</a>
       <a href="patient_search.jsp">Patient Search</a>
-      <a href="index.jsp" class="logout">Logout</a>
+      <a href="logout" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -76,9 +79,11 @@
       </div>
     </div>
     
-<script src="js/appointment-booking.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/appointment-booking.js"></script>
     <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
 
 
 
