@@ -17,7 +17,7 @@
       <a href="doctor-appointments.jsp">Today's Appointments</a>
       <a href="all-appointments.jsp">All Appointments</a>
       <a href="completed-appointments.jsp" class="active">Completed Appointments</a>
-      <a href="index.jsp" class="logout">Logout</a>
+      <a href="logout" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
@@ -82,6 +82,7 @@
     <script src="js/completed-appointments.js"></script>
     <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
 
 
 
