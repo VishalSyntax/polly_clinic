@@ -1,27 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
-    displayUserInfo();
+    loadDashboardHeader();
     loadDashboardStats();
 });
 
-function displayUserInfo() {
-    const userName = localStorage.getItem('userName') || localStorage.getItem('username') || 'Receptionist';
-    const loginTime = localStorage.getItem('loginTime');
-    
-    if (loginTime) {
-        const loginDate = new Date(loginTime);
-        const formattedTime = loginDate.toLocaleString();
-        
-        document.getElementById('userInfo').innerHTML = `
-            <strong>${userName}</strong><br>
-            <small>Login: ${formattedTime}</small>
-        `;
-    } else {
-        document.getElementById('userInfo').innerHTML = `
-            <strong>${userName}</strong><br>
-            <small>Receptionist Dashboard</small>
-        `;
-    }
+// Load dashboard header info
+function loadDashboardHeader() {
+    fetch('getUserInfo')
+        .then(response => response.json())
+        .then(data => {
+            const userInfo = document.getElementById('userInfo');
+            const currentDate = document.getElementById('current-date');
+            if (userInfo) {
+                userInfo.innerHTML = `
+                    <i class="bi bi-person-badge me-2"></i><strong>${data.fullName}</strong> | 
+                    <i class="bi bi-clock me-1"></i><span>Login Time: ${data.loginTime}</span>
+                `;
+            }
+            if (currentDate) {
+                currentDate.textContent = `Date: ${data.currentDate}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user info:', error);
+            const userInfo = document.getElementById('userInfo');
+            if (userInfo) {
+                userInfo.innerHTML = '<i class="bi bi-person-badge me-2"></i><strong>Receptionist</strong>';
+            }
+        });
 }
+
+
 
 async function loadDashboardStats() {
     try {
