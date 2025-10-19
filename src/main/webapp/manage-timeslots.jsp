@@ -19,7 +19,7 @@
       <a href="manage-timeslots.jsp" class="active">Time Slots</a>
       <a href="reports.jsp">Reports</a>
       <a href="system-settings.jsp">Settings</a>
-      <a href="index.jsp" class="logout">Logout</a>
+      <a href="logout" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -49,6 +49,7 @@
     <script src="js/manage-timeslots.js"></script>
 </body>
 </html>
+
 
 
 
