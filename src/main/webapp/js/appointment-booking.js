@@ -223,10 +223,10 @@ async function sendWhatsAppConfirmation(appointmentData, patientId) {
             })
         });
         
-        if (response.ok) {
-            console.log('WhatsApp confirmation sent successfully');
-        } else {
-            console.error('Failed to send WhatsApp message');
+        const result = await response.json();
+        
+        if (!response.ok && result.correspondentsStatus && result.correspondentsStatus.status === 'CORRESPONDENTS_QUOTE_EXCEEDED') {
+            console.warn('WhatsApp quota exceeded. Please upgrade your Green API plan.');
         }
     } catch (error) {
         console.error('Error sending WhatsApp message:', error);
@@ -234,20 +234,18 @@ async function sendWhatsAppConfirmation(appointmentData, patientId) {
 }
 
 function displayUserInfo() {
-    const userName = localStorage.getItem('userName') || localStorage.getItem('username') || 'Receptionist';
-    const loginTime = localStorage.getItem('loginTime');
-    
-    if (loginTime) {
-        const loginDate = new Date(loginTime);
-        const formattedTime = loginDate.toLocaleString();
-        
-        document.getElementById('userInfo').innerHTML = `
-            <strong>👩💼 ${userName}</strong> | 
-            <span>Login Time: ${formattedTime}</span>
-        `;
-    } else {
-        document.getElementById('userInfo').innerHTML = `
-            <strong>👩💼 ${userName}</strong>
-        `;
-    }
+    fetch('getUserInfo')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('userInfo').innerHTML = `
+                <i class="bi bi-person-badge me-2"></i><strong>${data.fullName}</strong> | 
+                <i class="bi bi-clock me-1"></i><span>Login Time: ${data.loginTime}</span>
+            `;
+        })
+        .catch(error => {
+            console.error('Error fetching user info:', error);
+            document.getElementById('userInfo').innerHTML = `
+                <i class="bi bi-person-badge me-2"></i><strong>Receptionist</strong>
+            `;
+        });
 }
