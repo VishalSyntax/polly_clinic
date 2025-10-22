@@ -14,10 +14,7 @@ function updateDateTime() {
 
 async function loadAllAppointments() {
     try {
-        const doctorId = localStorage.getItem('doctorId') || 1;
-        // console.log('Loading all appointments for doctor ID:', doctorId); // Reduced logging for auto-refresh
-        
-        const response = await fetch(`getAllAppointments?doctorId=${doctorId}`);
+        const response = await fetch('getAllAppointments');
         const appointments = await response.json();
         // console.log('All appointments received:', appointments); // Reduced logging for auto-refresh
 
@@ -83,11 +80,20 @@ async function viewRemarks(appointmentId, patientId) {
         remarksHtml += '</div>';
         remarksHtml += '<div class="modal-body" style="max-height: 400px; overflow-y: auto;">';
         
+        remarksHtml += '<div style="margin-bottom: 15px;">';
+        remarksHtml += '<label for="newRemark">Add New Remark:</label>';
+        remarksHtml += '<textarea class="form-control" id="newRemark" rows="3" style="margin-top: 5px; width: 100%; padding: 8px;"></textarea>';
+        remarksHtml += '</div>';
+        remarksHtml += '<div style="margin-bottom: 15px; text-align: center;">';
+        remarksHtml += `<button class="btn btn-primary btn-sm" onclick="saveRemark('${appointmentId}', '${patientId}')" style="margin-right: 8px; padding: 6px 12px;">Save Remark</button>`;
+        remarksHtml += `<button class="btn btn-warning btn-sm" onclick="completeAppointmentFromModal('${appointmentId}', '${patientId}')" style="padding: 6px 12px;">Complete Without Prescription</button>`;
+        remarksHtml += '</div>';
+        
         if (remarks.length === 0) {
             remarksHtml += '<h4>New Patient</h4>';
             remarksHtml += '<p style="color: #666; margin-bottom: 20px;">No previous remarks found.</p>';
         } else {
-            remarksHtml += '<h4>Previous Remarks:</h4>';
+            remarksHtml += '<h4>Existing Patient - Previous Remarks:</h4>';
             remarks.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             remarks.forEach(remark => {
@@ -98,14 +104,6 @@ async function viewRemarks(appointmentId, patientId) {
             });
         }
         
-        remarksHtml += '<div style="margin-top: 20px;">';
-        remarksHtml += '<label for="newRemark">Add New Remark:</label>';
-        remarksHtml += '<textarea class="form-control" id="newRemark" rows="3" style="margin-top: 5px; width: 100%; padding: 8px;"></textarea>';
-        remarksHtml += '</div>';
-        remarksHtml += '</div>';
-        remarksHtml += '<div style="margin-top: 20px; text-align: right;">';
-        remarksHtml += '<button class="login-btn" onclick="closeModal()" style="background-color: #6c757d; margin-right: 10px;">Close</button>';
-        remarksHtml += `<button class="login-btn" onclick="saveRemark('${appointmentId}', '${patientId}')">Save Remark</button>`;
         remarksHtml += '</div>';
         remarksHtml += '</div>';
         remarksHtml += '</div>';
@@ -133,21 +131,52 @@ async function saveRemark(appointmentId, patientId) {
             body: JSON.stringify({
                 appointmentId: appointmentId,
                 patientId: patientId,
-                remarks: newRemark,
-                doctorId: parseInt(localStorage.getItem('doctorId')) || 1
+                remarks: newRemark
             })
         });
 
         const result = await response.json();
         if (result.success) {
             alert('Remark saved successfully');
-            closeModal();
+            document.getElementById('newRemark').value = '';
         } else {
             alert('Failed to save remark');
         }
     } catch (error) {
         console.error('Error saving remark:', error);
         alert('Error saving remark');
+    }
+}
+
+// Complete appointment without prescription from modal
+async function completeAppointmentFromModal(appointmentId, patientId) {
+    if (!confirm('Are you sure you want to complete this appointment without prescription?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('completeAppointment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                appointmentId: appointmentId,
+                patientId: patientId
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert('Appointment completed successfully');
+            closeModal();
+            loadAllAppointments();
+        } else {
+            alert('Failed to complete appointment');
+        }
+    } catch (error) {
+        console.error('Error completing appointment:', error);
+        alert('Error completing appointment');
     }
 }
 
