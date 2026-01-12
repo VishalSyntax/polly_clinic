@@ -133,31 +133,25 @@ function displayAppointments(appointments) {
         if (filterValue === 'cancelled') {
             row.innerHTML = `
                 <td>${appointment.date}</td>
-                <td>${appointment.time || 'N/A'}</td>
                 <td>${appointment.patientId}</td>
                 <td>${appointment.patientName}</td>
                 <td>${appointment.contactNumber}</td>
                 <td>${appointment.doctorName}</td>
                 <td>
-                    <button class="btn btn-outline-secondary btn-sm w-100" onclick="viewCancelRemarks('${appointment.patientId}')">View Cancel History</button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="viewCancelRemarks('${appointment.patientId}')">View Cancel History</button>
                 </td>
             `;
         } else {
             row.innerHTML = `
                 <td>${appointment.date}</td>
-                <td>${appointment.time || 'N/A'}</td>
                 <td>${appointment.patientId}</td>
                 <td>${appointment.patientName}</td>
                 <td>${appointment.contactNumber || 'N/A'}</td>
                 <td>${appointment.doctorName || 'N/A'}</td>
                 <td>
-                    <div class="d-grid gap-1">
-                        <button class="btn btn-info btn-sm" onclick="viewHistory('${appointment.patientId}')">View History</button>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-danger btn-sm flex-fill" onclick="showCancelModal(${appointment.id}, '${appointment.patientId}')">Cancel</button>
-                            <button class="btn btn-warning btn-sm flex-fill" onclick="modifyAppointment(${appointment.id})">Modify</button>
-                        </div>
-                    </div>
+                    <button class="btn btn-info btn-sm me-1" onclick="viewHistory('${appointment.patientId}')">View History</button>
+                    <button class="btn btn-danger btn-sm me-1" onclick="showCancelModal(${appointment.id}, '${appointment.patientId}')">Cancel</button>
+                    <button class="btn btn-warning btn-sm" onclick="modifyAppointment(${appointment.id})">Modify</button>
                 </td>
             `;
         }
@@ -308,6 +302,7 @@ async function viewCancelRemarks(patientId) {
 
 async function sendCancellationWhatsApp(contactNumber, appointmentDetails) {
     if (!contactNumber || contactNumber.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
         return;
     }
     
@@ -333,10 +328,10 @@ async function sendCancellationWhatsApp(contactNumber, appointmentDetails) {
             })
         });
         
-        const result = await response.json();
-        
-        if (!response.ok && result.correspondentsStatus && result.correspondentsStatus.status === 'CORRESPONDENTS_QUOTE_EXCEEDED') {
-            console.warn('WhatsApp quota exceeded. Please upgrade your Green API plan.');
+        if (response.ok) {
+            console.log('WhatsApp cancellation notification sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
         }
     } catch (error) {
         console.error('Error sending WhatsApp message:', error);
@@ -406,6 +401,7 @@ function closeModifyModal() {
 
 async function sendModificationWhatsApp(contactNumber, appointmentDetails) {
     if (!contactNumber || contactNumber.trim() === '') {
+        console.log('No contact number provided, skipping WhatsApp notification');
         return;
     }
     
@@ -431,10 +427,10 @@ async function sendModificationWhatsApp(contactNumber, appointmentDetails) {
             })
         });
         
-        const result = await response.json();
-        
-        if (!response.ok && result.correspondentsStatus && result.correspondentsStatus.status === 'CORRESPONDENTS_QUOTE_EXCEEDED') {
-            console.warn('WhatsApp quota exceeded. Please upgrade your Green API plan.');
+        if (response.ok) {
+            console.log('WhatsApp modification notification sent successfully');
+        } else {
+            console.error('Failed to send WhatsApp message');
         }
     } catch (error) {
         console.error('Error sending WhatsApp message:', error);

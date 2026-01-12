@@ -1,85 +1,76 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Base64;
 
 public class WhatsAppNotificationService {
-
-    // IMPORTANT: Storing credentials directly in code is not secure.
-    // It's better to load these from a configuration file or environment variables.
-    private static final String INSTANCE_ID = "7105319809"; // Replace with your actual Instance ID
-    private static final String API_TOKEN = "f557539d8a6e4ee0acd5144309849c63a12e5c5094564d73b7";   // Replace with your actual API Token
-
-    public void sendAppointmentConfirmation(String contact, String patientName, String doctorName, String date, String time) {
+    private static final String TWILIO_ACCOUNT_SID = "your_account_sid";
+    private static final String TWILIO_AUTH_TOKEN = "your_auth_token";
+    private static final String TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"; // Twilio sandbox number
+    
+    public static void sendAppointmentBooked(String patientPhone, String patientName, String patientId, String date, String time, String doctorName) {
         String message = String.format(
-            "Dear %s,\n\nYour appointment with %s on %s at %s has been confirmed.\n\nThank you,\nPolly Clinic",
-            patientName, doctorName, date, time
-        );
-        sendMessage(contact, message);
-    }
-
-    public void sendPrescriptionReady(String contact, String patientName) {
-        String message = String.format(
-            "Dear %s,\n\nYour prescription is ready. Please collect it from the clinic at your convenience.\n\nThank you,\nPolly Clinic",
-            patientName
-        );
-        sendMessage(contact, message);
+            "🏥 *PollyClinic Appointment Confirmed* ✅\n\n" +
+            "👤 *Patient:* %s (ID: %s)\n" +
+            "📅 *Date:* %s\n" +
+            "⏰ *Time:* %s\n" +
+            "👨‍⚕️ *Doctor:* %s\n\n" +
+            "📍 Please arrive 15 minutes early\n" +
+            "📞 Contact: +91-9579575606\n\n" +
+            "Thank you for choosing PollyClinic!", 
+            patientName, patientId, date, time, doctorName);
+        sendWhatsAppMessage(patientPhone, message);
     }
     
-    public void sendAppointmentCancellation(String contact, String patientName, String reason) {
+    public static void sendAppointmentCancelled(String patientPhone, String patientName, String patientId, String date, String time, String doctorName) {
         String message = String.format(
-            "Dear %s,\n\nWe regret to inform you that your appointment has been cancelled.\nReason: %s\n\nPlease contact us to reschedule.\n\nThank you,\nPolly Clinic",
-            patientName, reason
-        );
-        sendMessage(contact, message);
+            "🏥 *PollyClinic Appointment Cancelled* ❌\n\n" +
+            "👤 *Patient:* %s (ID: %s)\n" +
+            "📅 *Cancelled Date:* %s\n" +
+            "⏰ *Cancelled Time:* %s\n" +
+            "👨‍⚕️ *Doctor:* %s\n\n" +
+            "📞 To reschedule, call: +91-9579575606\n" +
+            "🌐 Or visit our website\n\n" +
+            "We apologize for any inconvenience.", 
+            patientName, patientId, date, time, doctorName);
+        sendWhatsAppMessage(patientPhone, message);
     }
-
-    private void sendMessage(String contact, String message) {
-        if (contact == null || contact.trim().isEmpty()) {
-            System.err.println("WhatsApp Error: Contact number is empty.");
-            return;
-        }
-
+    
+    public static void sendPrescriptionReady(String patientPhone, String patientName, String patientId, String doctorName, String medicines, String instructions) {
+        String message = String.format(
+            "🏥 *PollyClinic Prescription Ready* 💊\n\n" +
+            "👤 *Patient:* %s (ID: %s)\n" +
+            "👨‍⚕️ *Prescribed by:* %s\n\n" +
+            "💊 *Medicines:*\n%s\n\n" +
+            "📋 *Instructions:*\n%s\n\n" +
+            "🕒 *Pickup Hours:* 9 AM - 6 PM\n" +
+            "📍 *Location:* PollyClinic Reception\n\n" +
+            "⚠️ Please bring your ID for verification", 
+            patientName, patientId, doctorName, medicines, instructions);
+        sendWhatsAppMessage(patientPhone, message);
+    }
+    
+    private static void sendWhatsAppMessage(String toPhone, String message) {
         try {
-            URL url = new URL("https://api.green-api.com/waInstance" + INSTANCE_ID + "/sendMessage/" + API_TOKEN);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json; utf-8");
-            conn.setDoOutput(true);
-
-            // *** FIX APPLIED HERE ***
-            // The chatId must be in the format "phonenumber@c.us".
-            String chatId = contact.trim() + "@c.us";
+            String auth = Base64.getEncoder().encodeToString((TWILIO_ACCOUNT_SID + ":" + TWILIO_AUTH_TOKEN).getBytes());
             
-            // Create the JSON payload with the corrected chatId.
-            String jsonInputString = String.format("{\"chatId\": \"%s\", \"message\": \"%s\"}", chatId, message);
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = conn.getResponseCode();
-            System.out.println("Green API Response Code: " + responseCode);
-
-            // *** IMPROVED ERROR LOGGING ***
-            // Read the full response from the server to get detailed error messages.
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = br.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-                System.out.println("Green API Response Body: " + response.toString());
-            }
-
-            conn.disconnect();
-
+            // URL encode the message
+            String encodedMessage = java.net.URLEncoder.encode(message, "UTF-8");
+            String body = String.format("From=%s&To=whatsapp:+91%s&Body=%s", 
+                                      TWILIO_WHATSAPP_NUMBER, toPhone, encodedMessage);
+            
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.twilio.com/2010-04-01/Accounts/" + TWILIO_ACCOUNT_SID + "/Messages.json"))
+                .header("Authorization", "Basic " + auth)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+                
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("WhatsApp sent: " + response.statusCode());
         } catch (Exception e) {
-            System.err.println("Error sending WhatsApp message to " + contact);
-            e.printStackTrace();
+            System.err.println("WhatsApp notification failed: " + e.getMessage());
         }
     }
 }

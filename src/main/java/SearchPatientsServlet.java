@@ -58,7 +58,6 @@ public class SearchPatientsServlet extends HttpServlet {
                 patient.id = rs.getString("patient_id");
                 patient.name = rs.getString("name");
                 patient.contact = rs.getString("contact_number");
-                patient.address = rs.getString("address");
                 patient.email = rs.getString("email");
                 patients.add(patient);
             }
@@ -76,7 +75,6 @@ public class SearchPatientsServlet extends HttpServlet {
         String id;
         String name;
         String contact;
-        String address;
         String email;
     }
 }
