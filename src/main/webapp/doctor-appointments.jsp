@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Appointments - PollyClinic</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/doctor-appointments.css">
+    <link rel="stylesheet" href="css/bootstrap-sidebar-override.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
@@ -13,10 +16,10 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="doctor-appointments.html" class="active">Today's Appointments</a>
-        <a href="all-appointments.html">All Appointments</a>
-        <a href="completed-appointments.html">Completed Appointments</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="doctor-appointments.jsp" class="active">Today's Appointments</a>
+        <a href="all-appointments.jsp">All Appointments</a>
+        <a href="completed-appointments.jsp">Completed Appointments</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
@@ -25,7 +28,8 @@
             <div class="doctor-info" id="doctorInfo" style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                 
             </div>
-            <h1>📅 Today's Appointments</h1>
+            <h1 id="welcome-message">Today's Appointments</h1>
+            <!-- <p id="current-date"></p> -->
             
             <div class="appointments-table">
                 <table>
@@ -54,19 +58,37 @@
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <div id="existingRemarks"></div>
-                <div style="margin-top: 20px;">
+                <div style="margin-bottom: 15px;">
                     <label for="newRemark">Add New Remark:</label>
                     <textarea class="form-control" id="newRemark" rows="3" style="margin-top: 5px;"></textarea>
                 </div>
-            </div>
-            <div style="margin-top: 20px; text-align: right;">
-                <button class="login-btn" onclick="closeModal()" style="background-color: #6c757d; margin-right: 10px;">Close</button>
-                <button class="login-btn" onclick="saveRemark()">Save Remark</button>
+                <div style="margin-bottom: 15px; text-align: center;">
+                    <button class="btn btn-primary btn-sm" onclick="saveRemark()" style="margin-right: 8px; padding: 6px 12px;">Save Remark</button>
+                    <button class="btn btn-warning btn-sm" onclick="completeAppointmentFromModal()" style="padding: 6px 12px;">Complete Without Prescription</button>
+                </div>
+                <div id="existingRemarks"></div>
             </div>
         </div>
     </div>
 
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Prevent back button access after logout
+        window.addEventListener('load', function() {
+            if (performance.navigation.type === 2) {
+                window.location.replace('index.jsp');
+            }
+        });
+        
+        // Clear history on logout
+        document.querySelector('.logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.replace('index.jsp');
+        });
+    </script>
     <script src="js/doctor-appointments.js"></script>
 </body>
 </html>
+
+
+

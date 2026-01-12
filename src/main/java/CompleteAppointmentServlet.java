@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class SaveRemarkServlet extends HttpServlet {
+public class CompleteAppointmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         response.setContentType("application/json");
@@ -22,15 +22,6 @@ public class SaveRemarkServlet extends HttpServlet {
             JsonObject error = new JsonObject();
             error.addProperty("success", false);
             error.addProperty("message", "Unauthorized access");
-            out.print(error.toString());
-            return;
-        }
-        
-        Integer doctorId = (Integer) session.getAttribute("doctorId");
-        if (doctorId == null) {
-            JsonObject error = new JsonObject();
-            error.addProperty("success", false);
-            error.addProperty("message", "Doctor ID not found in session");
             out.print(error.toString());
             return;
         }
@@ -46,26 +37,22 @@ public class SaveRemarkServlet extends HttpServlet {
         JsonObject jsonResponse = new JsonObject();
         
         try (Connection conn = DatabaseConnection.getConnection()) {
-            String sql = "INSERT INTO patient_remarks (patient_id, doctor_id, appointment_id, remarks) VALUES (?, ?, ?, ?)";
-            
+            String sql = "UPDATE appointments SET status = 'completed' WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, requestData.get("patientId").getAsString());
-            stmt.setInt(2, doctorId);
-            stmt.setInt(3, requestData.get("appointmentId").getAsInt());
-            stmt.setString(4, requestData.get("remarks").getAsString());
+            stmt.setInt(1, requestData.get("appointmentId").getAsInt());
             
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
                 jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Remark saved successfully");
+                jsonResponse.addProperty("message", "Appointment completed successfully");
             } else {
                 jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Failed to save remark");
+                jsonResponse.addProperty("message", "Failed to complete appointment");
             }
         } catch (Exception e) {
             jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Error saving remark: " + e.getMessage());
+            jsonResponse.addProperty("message", "Error completing appointment: " + e.getMessage());
         }
         
         out.print(jsonResponse.toString());

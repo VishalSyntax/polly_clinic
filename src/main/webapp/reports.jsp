@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\r\n\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,14 +13,26 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="admin-dashboard.html">Dashboard</a>
-        <a href="manage-doctors.html">Manage Doctors</a>
-        <a href="manage-staff.html">Manage Staff</a>
-        <a href="reports.html" class="active">Reports</a>
-        <a href="system-settings.html">Settings</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="admin-dashboard.jsp">Dashboard</a>
+        <a href="manage-doctors.jsp">Manage Doctors</a>
+        <a href="manage-staff.jsp">Manage Staff</a>
+        <a href="reports.jsp" class="active">Reports</a>
+        <a href="system-settings.jsp">Settings</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
     
     
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+

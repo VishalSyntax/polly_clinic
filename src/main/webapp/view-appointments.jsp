@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,11 +15,11 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="receptionist-dashboard.html">Dashboard</a>
-      <a href="appointment-booking.html">Book Appointment</a>
-      <a href="view-appointments.html" class="active">View Appointments</a>
-      <a href="patient_search.html">Patient Search</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="receptionist-dashboard.jsp">Dashboard</a>
+      <a href="appointment-booking.jsp">Book Appointment</a>
+      <a href="view-appointments.jsp" class="active">View Appointments</a>
+      <a href="patient_search.jsp">Patient Search</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -162,7 +162,19 @@
         </div>
     </div>
     
-    <script src="js/bootstrap.bundle.min_2.js"></script>
+<script src="js/bootstrap.bundle.min_2.js"></script>
     <script src="js/view-appointments.js"></script>
-</body>
+    <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+

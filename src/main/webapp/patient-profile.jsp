@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Profile - AppointCare</title>
+    <title>Patient Profile - PollyClinic</title>
     <link rel="stylesheet" href="css/login.css">
     <style>
         body {
@@ -126,13 +126,13 @@
       <div class="logo">
         <img src="img/logo.webp" alt="Hospital Logo">
       </div>
-      <a href="main.html">Patient Info</a>
-      <a href="appointment-booking.html">Book Appointment</a>
-      <a href="patient_search.html">Patient Search</a>
-      <a href="appointment-management.html">Appointments</a>
-      <a href="patient-profile.html" class="active">Patient Profile</a>
-      <a href="receptionist-dashboard.html">Dashboard</a>
-      <a href="index.html" class="logout">Logout</a>
+      <a href="main.jsp">Patient Info</a>
+      <a href="appointment-booking.jsp">Book Appointment</a>
+      <a href="patient_search.jsp">Patient Search</a>
+      <a href="appointment-management.jsp">Appointments</a>
+      <a href="patient-profile.jsp" class="active">Patient Profile</a>
+      <a href="receptionist-dashboard.jsp">Dashboard</a>
+      <a href="index.jsp" class="logout">Logout</a>
     </div>
     
     <div class="main-content">
@@ -143,7 +143,7 @@
             </div>
             <div>
                 <button class="login-btn" onclick="editProfile()">Edit Profile</button>
-                <button class="login-btn" onclick="window.location.href='appointment-booking.html'" style="background-color: #28a745; margin-left: 10px;">Book Appointment</button>
+                <button class="login-btn" onclick="window.location.href='appointment-booking.jsp'" style="background-color: #28a745; margin-left: 10px;">Book Appointment</button>
             </div>
         </div>
         
@@ -242,3 +242,13 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+

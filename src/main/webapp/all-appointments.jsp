@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\r\n\r\n<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,16 +12,16 @@
         <div class="logo">
             <img src="img/logo.webp" alt="Hospital Logo">
         </div>
-        <a href="doctor-appointments.html">Today's Appointments</a>
-        <a href="all-appointments.html" class="active">All Appointments</a>
-        <a href="completed-appointments.html">Completed Appointments</a>
-        <a href="index.html" class="logout">Logout</a>
+        <a href="doctor-appointments.jsp">Today's Appointments</a>
+        <a href="all-appointments.jsp" class="active">All Appointments</a>
+        <a href="completed-appointments.jsp">Completed Appointments</a>
+        <a href="logout" class="logout">Logout</a>
     </div>
 
     <div class="main-content">
         <div class="login-container" style="width: 80%; max-width: none;">
             <div class="current-time" id="currentDateTime"></div>
-            <h1>📋 All Appointments</h1>
+            <h1>All Appointments</h1>
             
             <div class="appointments-table">
                 <table>
@@ -47,5 +47,19 @@
     <script src="js/all-appointments.js"></script>
 
 
-</body>
+    <script>\r\n        // Prevent back button access after logout\r\n        history.pushState(null, null, location.href);\r\n        window.onpopstate = function () {\r\n            history.go(1);\r\n        };\r\n    </script>\r\n</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
