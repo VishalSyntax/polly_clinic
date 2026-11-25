@@ -305,6 +305,15 @@
         <servlet-name>ModifyAppointmentServlet</servlet-name>
         <url-pattern>/modifyAppointment</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CompleteAppointmentServlet</servlet-name>
+        <servlet-class>CompleteAppointmentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CompleteAppointmentServlet</servlet-name>
+        <url-pattern>/completeAppointment</url-pattern>
+    </servlet-mapping>
     
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
