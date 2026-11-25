@@ -31,42 +31,33 @@ public class CheckPatientStatusServlet extends HttpServlet {
             return;
         }
         
-        try {
-            Connection conn = DatabaseConnection.getConnection();
+        String sql = "SELECT a.status, d.name as doctor_name " +
+                    "FROM appointments a " +
+                    "JOIN doctors d ON a.doctor_id = d.id " +
+                    "WHERE a.patient_id = ? AND a.status = 'scheduled' " +
+                    "ORDER BY a.appointment_date DESC, a.appointment_time DESC " +
+                    "LIMIT 1";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            // Check for any scheduled appointment
-            String sql = "SELECT a.status, d.name as doctor_name " +
-                        "FROM appointments a " +
-                        "JOIN doctors d ON a.doctor_id = d.id " +
-                        "WHERE a.patient_id = ? AND a.status = 'scheduled' " +
-                        "ORDER BY a.appointment_date DESC, a.appointment_time DESC " +
-                        "LIMIT 1";
-            
-            PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, patientId);
-            ResultSet rs = stmt.executeQuery();
-            
-            JsonObject statusResponse = new JsonObject();
-            
-            if (rs.next()) {
-                // Found scheduled appointment
-                String status = rs.getString("status");
-                String doctorName = rs.getString("doctor_name");
+            try (ResultSet rs = stmt.executeQuery()) {
+                JsonObject statusResponse = new JsonObject();
                 
-                statusResponse.addProperty("lastAppointmentStatus", "scheduled");
-                statusResponse.addProperty("doctorName", doctorName);
-                statusResponse.addProperty("hasScheduledAppointment", true);
-            } else {
-                // No scheduled appointments found
-                statusResponse.addProperty("hasScheduledAppointment", false);
-                statusResponse.addProperty("lastAppointmentStatus", "none");
+                if (rs.next()) {
+                    String doctorName = rs.getString("doctor_name");
+                    
+                    statusResponse.addProperty("lastAppointmentStatus", "scheduled");
+                    statusResponse.addProperty("doctorName", doctorName);
+                    statusResponse.addProperty("hasScheduledAppointment", true);
+                } else {
+                    statusResponse.addProperty("hasScheduledAppointment", false);
+                    statusResponse.addProperty("lastAppointmentStatus", "none");
+                }
+                
+                out.print(new Gson().toJson(statusResponse));
             }
-            
-            out.print(new Gson().toJson(statusResponse));
-            
-            rs.close();
-            stmt.close();
-            conn.close();
             
         } catch (Exception e) {
             e.printStackTrace();
